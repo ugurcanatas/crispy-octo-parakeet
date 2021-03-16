@@ -116,17 +116,12 @@ public class Main extends Frame implements KeyListener {
     }
 
     public Boolean detectCollusion (int tempX, int tempY) {
+        //calculate tile index
         int index = (tempX - 1) + 13*(tempY-1);
-
-        print("TILE LIST INDEX: " + index);
+        //Get tile type
         String tiletype = tileList.get(index).getTILE_TYPE();
-        print("TILE TYPE IS: " + tiletype);
-        if (tiletype.equals("WALL")) {
-            print("There is A wall");
-            return true;
-        }
-        print("There is NO wall");
-        return false;
+        //Check if it's a wall or not & return
+        return tiletype.equals("WALL");
     }
 
     @Override
@@ -161,6 +156,7 @@ public class Main extends Frame implements KeyListener {
                 break;
             default:
         }
+        //repaint after moving the character
         repaint();
     }
 
