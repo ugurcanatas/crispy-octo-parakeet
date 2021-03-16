@@ -1,17 +1,21 @@
 package com.prolab2Smurfs;
 
+import com.prolab2Smurfs.PlayerClasses.Karakter;
+import com.prolab2Smurfs.PlayerClasses.Oyuncu;
 import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.prolab2Smurfs.Utils.Constants.BLOCK_H;
-import static com.prolab2Smurfs.Utils.Constants.BLOCK_W;
+import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class Main extends Frame implements KeyListener {
 
@@ -23,6 +27,11 @@ public class Main extends Frame implements KeyListener {
     ArrayList<String> mapList;
     String c1,c2;
     ArrayList<Tiles> tileList = new ArrayList<>();
+
+    Image smurfetteImage;
+
+    //Init Player Class
+    Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","DOTGÖZ",7,6,20);
 
     public Main() {
         print("Map Received: \n" + mapString );
@@ -46,6 +55,12 @@ public class Main extends Frame implements KeyListener {
                 Tiles tile = new Tiles(BLOCK_W * (j+1), BLOCK_H * (i+1), mapRow[j],j,i);
                 tileList.add(tile);
             }
+        }
+
+        try {
+            smurfetteImage = ImageIO.read(new File(assetsSmurfette));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         setTitle("Smurfs");
@@ -98,13 +113,21 @@ public class Main extends Frame implements KeyListener {
             }
         }
 
+        graphics2D.drawImage(smurfetteImage,13*BLOCK_H,9*BLOCK_W,40,40,null);
+
+        //DRAW MYSELF 👻
         graphics2D.setColor(Color.blue);
-        graphics2D.fillRect(BLOCK_W * defX,BLOCK_H * defY,BLOCK_W,BLOCK_H);
+        graphics2D.fillRect(BLOCK_W * MYSELF.getCoords_x(),BLOCK_H * MYSELF.getCoords_y(),BLOCK_W,BLOCK_H);
+
+        // Draw x,y coords
+        graphics2D.setColor(Color.decode("#000000"));
+        graphics2D.drawString("X: " + MYSELF.getCoords_x(),500,525);
+
+        graphics2D.setColor(Color.decode("#000000"));
+        graphics2D.drawString("Y: " + MYSELF.getCoords_y(),500,550);
 
 
     }
-
-
 
     public static void main(String[] args) {
         new Main();
@@ -126,32 +149,40 @@ public class Main extends Frame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int tempX = defX;
-        int tempY = defY;
+        //assign coords to temp vars
+        int tempX = MYSELF.getCoords_x();
+        int tempY = MYSELF.getCoords_y();
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
-                //assign to temp
                 tempX++;
                 if (!detectCollusion(tempX,tempY)) {
-                    defX++;
+                    int cX = MYSELF.getCoords_x();
+                    cX++;
+                    MYSELF.setCoords_x(cX);
                 }
                 break;
             case KeyEvent.VK_LEFT:
                 tempX--;
                 if (!detectCollusion(tempX,tempY)) {
-                    defX--;
+                    int cX = MYSELF.getCoords_x();
+                    cX--;
+                    MYSELF.setCoords_x(cX);
                 }
                 break;
             case KeyEvent.VK_UP:
                 tempY--;
                 if (!detectCollusion(tempX,tempY)) {
-                    defY--;
+                    int cY = MYSELF.getCoords_y();
+                    cY--;
+                    MYSELF.setCoords_y(cY);
                 }
                 break;
             case KeyEvent.VK_DOWN:
                 tempY++;
                 if (!detectCollusion(tempX,tempY)) {
-                    defY++;
+                    int cY = MYSELF.getCoords_y();
+                    cY++;
+                    MYSELF.setCoords_y(cY);
                 }
                 break;
             default:
