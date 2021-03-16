@@ -60,4 +60,8 @@ public class Karakter {
     public void setCoords_y(int coords_y) {
         this.coords_y = coords_y;
     }
+
+    public String getImg (){
+        return "";
+    }
 }

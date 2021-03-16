@@ -1,5 +1,8 @@
 package com.prolab2Smurfs.PlayerClasses;
 
+import static com.prolab2Smurfs.Utils.Constants.assetsBrainy;
+import static com.prolab2Smurfs.Utils.Constants.assetsLazy;
+
 public class Oyuncu extends Karakter {
     private String oyuncuID, oyuncuAdi, oyuncuTur;
     private int Skor;
@@ -18,5 +21,14 @@ public class Oyuncu extends Karakter {
 
     public int PuaniGoster (String ENEMY_TYPE) {
         return this.Skor;
+    }
+
+    @Override
+    public String getImg() {
+        if (this.oyuncuTur.equals("TEMBEL")) {
+            return assetsLazy;
+        }else {
+            return assetsBrainy;
+        }
     }
 }

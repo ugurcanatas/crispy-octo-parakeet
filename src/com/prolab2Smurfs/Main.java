@@ -2,6 +2,8 @@ package com.prolab2Smurfs;
 
 import com.prolab2Smurfs.PlayerClasses.Karakter;
 import com.prolab2Smurfs.PlayerClasses.Oyuncu;
+import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.GozlukluSirin;
+import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.TembelSirin;
 import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
 
@@ -29,12 +31,12 @@ public class Main extends Frame implements KeyListener {
     ArrayList<Tiles> tileList = new ArrayList<>();
 
     Image smurfetteImage;
+    Image playerImage;
 
     //Init Player Class
-    Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","DOTGÖZ",7,6,20);
+    Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","GOZLUKLU",7,6,20);
 
     public Main() {
-        print("Map Received: \n" + mapString );
         MapReader m = new MapReader();
         m.readMap();
         mapString = m.getMapString();
@@ -59,6 +61,7 @@ public class Main extends Frame implements KeyListener {
 
         try {
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
+            playerImage = ImageIO.read(new File(MYSELF.getImg()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,8 +119,7 @@ public class Main extends Frame implements KeyListener {
         graphics2D.drawImage(smurfetteImage,13*BLOCK_H,9*BLOCK_W,40,40,null);
 
         //DRAW MYSELF 👻
-        graphics2D.setColor(Color.blue);
-        graphics2D.fillRect(BLOCK_W * MYSELF.getCoords_x(),BLOCK_H * MYSELF.getCoords_y(),BLOCK_W,BLOCK_H);
+        graphics2D.drawImage(playerImage,BLOCK_W * MYSELF.getCoords_x(),BLOCK_H * MYSELF.getCoords_y(),40,40,null);
 
         // Draw x,y coords
         graphics2D.setColor(Color.decode("#000000"));
@@ -125,7 +127,6 @@ public class Main extends Frame implements KeyListener {
 
         graphics2D.setColor(Color.decode("#000000"));
         graphics2D.drawString("Y: " + MYSELF.getCoords_y(),500,550);
-
 
     }
 
