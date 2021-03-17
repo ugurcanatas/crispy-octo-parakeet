@@ -1,61 +1,29 @@
 package com.prolab2Smurfs.Dijkstra;
 
 public class SingleNode {
-    //WALL PATH etc...
-    private int nodeType;
-    //coordinates (x,y).
-    private int x, y;
-    //prev node coordinates
-    private int lastX,lastY;
-    //distance
-    private int distance;
+    private int nType;
+    private int lastX;
+    private int lastY;
+    private int x;
+    private int y;
+    private int dist;
 
-    //Destination x,y
-    private int destX, destY;
 
     public SingleNode(int type, int x, int y) {
-        nodeType = type;
+        nType = type;
         this.x = x;
         this.y = y;
-        distance = 0;
+        dist = 0;
     }
 
-    //Getters default properties
-    public int getNodeType() {
-        return nodeType;
-    }
+    public int getX() {return x;}		//GET METHODS
+    public int getY() {return y;}
+    public int getLastX() {return lastX;}
+    public int getLastY() {return lastY;}
+    public int getType() {return nType;}
+    private int getDist() {return dist;}
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getLastX() {
-        return lastX;
-    }
-
-    public int getLastY() {
-        return lastY;
-    }
-
-    public int getDist() {
-        return distance;
-    }
-
-    //Setters
-    public void setNodeType(int type) {
-        nodeType = type;
-    }
-
-    public void setLastNode (int x, int y) {
-        lastX = x;
-        lastY = y;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
+    public void setType(int type) {nType = type;}		//SET METHODS
+    public void setLastNode(int x, int y) {lastX = x; lastY = y;}
+    public void setDist(int dist){ this.dist = dist;}
 }

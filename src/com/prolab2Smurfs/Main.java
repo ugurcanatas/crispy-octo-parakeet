@@ -35,51 +35,34 @@ public class Main extends Frame implements KeyListener {
     Image smurfetteImage;
     Image playerImage;
 
-    int [][] MAP_MATRIX;
-
     SingleNode[][] NODE_MATRIX;
+    int nodeRows = 13;
 
     //Init Player Class
     Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","GOZLUKLU",7,6,20);
 
     public Main() {
-        setTitle("Smurfs");
-        setSize(600,600);
-        setVisible(true);
-
         MapReader m = new MapReader();
         m.readMap();
         mapString = m.getMapString();
-        c1 = m.getC1();
-        c2 = m.getC2();
         mapList = m.getMapList();
+        NODE_MATRIX = new SingleNode[13][13];
+        NODE_MATRIX = m.getNodes();
 
-        //print("MAP LIST \n" + mapList);
-        //print("MAP LIST \n" + mapList.size());
-        //print("MAP LIST \n" + mapList.get(0).split("\t").length);
-
-        int rowLength = mapList.get(0).split("\t").length;
-        print("ROW LEN" + rowLength);
-        print("MAP LIST ROWS" + mapList.size());
-        //Create 13by13 Matrix
-        NODE_MATRIX = new SingleNode[rowLength][rowLength];
+        for (int i = 0; i < nodeRows; i++) {
+            for (int j = 0; j < nodeRows; j++) {
+                System.out.print(NODE_MATRIX[i][j].getType() + " \t");
+            }
+            System.out.println("");
+        }
 
         // This is going to determine y coords
-        for (int i = 1; i <= mapList.size(); i++) {
-            String[] mapRow = mapList.get(i-1).split("\t");
+        for (int i = 1; i <= 13; i++) {
             // This is going to determine x coords
-            for (int j = 1; j <= mapRow.length; j++) {
+            for (int j = 1; j <= 13; j++) {
                 //print("MAP ROW IS 1 OR 0" + mapRow[j]);
-                Tiles tile = new Tiles(BLOCK_W * j, BLOCK_H * i, mapRow[j-1],j-1,i-1);
+                Tiles tile = new Tiles(BLOCK_W * j, BLOCK_H * i, NODE_MATRIX[i-1][j-1].getType(),j-1,i-1);
                 tileList.add(tile);
-
-                if (mapRow[j-1].equals("1")) {
-                    //path
-                    NODE_MATRIX[i-1][j-1] = new SingleNode(3,j-1,i-1);
-                }else {
-                    //wall
-                    NODE_MATRIX[i-1][j-1] = new SingleNode(2,j-1,i-1);
-                }
             }
         }
 
@@ -89,6 +72,9 @@ public class Main extends Frame implements KeyListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setTitle("Smurfs");
+        setSize(600,600);
+        setVisible(true);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -96,34 +82,7 @@ public class Main extends Frame implements KeyListener {
             }
         });
         addKeyListener(this);
-    }
 
-    public class Node {
-        private int nType;
-        private int lastX;
-        private int lastY;
-        private int x;
-        private int y;
-        private int dist;
-
-
-        public Node(int type, int x, int y) {
-            nType = type;
-            this.x = x;
-            this.y = y;
-            dist = 0;
-        }
-
-        public int getX() {return x;}		//GET METHODS
-        public int getY() {return y;}
-        public int getLastX() {return lastX;}
-        public int getLastY() {return lastY;}
-        public int getType() {return nType;}
-        private int getDist() {return dist;}
-
-        public void setType(int type) {nType = type;}		//SET METHODS
-        public void setLastNode(int x, int y) {lastX = x; lastY = y;}
-        public void setDist(int dist){ this.dist = dist;}
     }
 
     public static void main(String[] args) {
@@ -137,6 +96,7 @@ public class Main extends Frame implements KeyListener {
 
         Graphics2D graphics2D = (Graphics2D)g;
 
+        //TYPE 2 WALL, TYPE 3 PATH
         //Draw map tiles
         for (int i = 0; i < tileList.size(); i++) {
             String TILE_TYPE = tileList.get(i).getTILE_TYPE();
@@ -151,7 +111,7 @@ public class Main extends Frame implements KeyListener {
                 graphics2D.setColor(Color.decode("#9e9e9e"));
                 graphics2D.fillRect(xy[0],xy[1],BLOCK_W,BLOCK_H);
                 graphics2D.setColor(Color.decode("#000000"));
-                graphics2D.drawString(String.valueOf(i),xy[0] + 15,xy[1] + 30);
+                ///graphics2D.drawString(String.valueOf(i),xy[0] + 15,xy[1] + 30);
             }else {
                 //Draw stroke
                 graphics2D.setColor(Color.decode("#000000"));

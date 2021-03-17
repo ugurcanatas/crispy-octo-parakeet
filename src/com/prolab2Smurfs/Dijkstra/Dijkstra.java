@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class Dijkstra {
 
-    ArrayList<SingleNode> progress = new ArrayList<>();
+   /* ArrayList<SingleNode> progress = new ArrayList<>();
     SingleNode startNode;
     SingleNode[][] NODE_MATRIX;
     boolean solving = true;
@@ -111,5 +111,5 @@ public class Dijkstra {
             }
             System.out.println("");
         }
-    }
+    }*/
 }
