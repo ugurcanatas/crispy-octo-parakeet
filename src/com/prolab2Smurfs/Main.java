@@ -1,6 +1,9 @@
 package com.prolab2Smurfs;
 
+import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.Dugum;
+import com.prolab2Smurfs.Dijkstra.ShortestPath;
+import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
 import com.prolab2Smurfs.PlayerClasses.Oyuncu;
 import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.GozlukluSirin;
@@ -32,10 +35,18 @@ public class Main extends Frame implements KeyListener {
     Image smurfetteImage;
     Image playerImage;
 
+    int [][] MAP_MATRIX;
+
+    SingleNode[][] NODE_MATRIX;
+
     //Init Player Class
     Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","GOZLUKLU",7,6,20);
 
     public Main() {
+        setTitle("Smurfs");
+        setSize(600,600);
+        setVisible(true);
+
         MapReader m = new MapReader();
         m.readMap();
         mapString = m.getMapString();
@@ -47,152 +58,29 @@ public class Main extends Frame implements KeyListener {
         //print("MAP LIST \n" + mapList.size());
         //print("MAP LIST \n" + mapList.get(0).split("\t").length);
 
-        int [][] MAP_MATRIX = new int[mapList.size()][mapList.size()];
+        int rowLength = mapList.get(0).split("\t").length;
+        print("ROW LEN" + rowLength);
+        print("MAP LIST ROWS" + mapList.size());
+        //Create 13by13 Matrix
+        NODE_MATRIX = new SingleNode[rowLength][rowLength];
+
         // This is going to determine y coords
-        for (int i = 0; i < mapList.size(); i++) {
-            String[] mapRow = mapList.get(i).split("\t");
+        for (int i = 1; i <= mapList.size(); i++) {
+            String[] mapRow = mapList.get(i-1).split("\t");
             // This is going to determine x coords
-            for (int j = 0; j < mapRow.length; j++) {
+            for (int j = 1; j <= mapRow.length; j++) {
                 //print("MAP ROW IS 1 OR 0" + mapRow[j]);
-                Tiles tile = new Tiles(BLOCK_W * (j+1), BLOCK_H * (i+1), mapRow[j],j,i);
+                Tiles tile = new Tiles(BLOCK_W * j, BLOCK_H * i, mapRow[j-1],j-1,i-1);
                 tileList.add(tile);
-            }
-        }
-        int a = 0;
-        List<List<Integer>> MAP_NODES = new ArrayList<List<Integer>>();
 
-        //Create Matrix
-        //you did it you crazy mf
-        for (int i = 0; i < tileList.size(); i++){
-            //Düğüm ekle
-            String tiletype = tileList.get(i).getTILE_TYPE();
-            List<Integer> intList = new ArrayList<>();
-            MAP_NODES.add(intList);
-            if (tiletype.equals("PATH")) {
-                //komşuluk kontrolü
-                if (i < 13) {
-                    //ilk rowdaki komşuluklara bakarken üstte komşuları olamaz ve yanda da olamaz
-                    //Sadece sağ ve sola bak
-                    int left = i - 1;
-                    int right = i + 1;
-                    int down = i + 13;
-                    Tiles tilesLeft = tileList.get(left);
-                    Tiles tilesRight = tileList.get(right);
-                    Tiles tilesDown = tileList.get(down);
-                    for (int j = 0; j < tileList.size(); j++){
-                        if (j == left && tilesLeft.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(left,1);
-                        }
-                        else if (j == right && tilesRight.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(right,1);
-                        }
-                        else if (j == down && tilesDown.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(down,1);
-                        }else {
-                            MAP_NODES.get(i).add(0);
-                        }
-                    }
-                }
-                //Son row
-                else if ( i > 131) {
-                    int left = i - 1;
-                    int right = i + 1;
-                    int up = i - 13;
-                    Tiles tilesLeft = tileList.get(left);
-                    Tiles tilesRight = tileList.get(right);
-                    Tiles tilesUp = tileList.get(up);
-                    for (int j = 0; j < tileList.size(); j++){
-                        if (j == left && tilesLeft.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(left,1);
-                        }
-                        else if (j == right && tilesRight.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(right,1);
-                        }
-                        else if (j == up && tilesUp.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(up,1);
-                        }else {
-                            MAP_NODES.get(i).add(0);
-                        }
-                    }
-                }
-                //en soldaki
-                else if (i == 65) {
-                    int right = i + 1;
-                    Tiles tilesRight = tileList.get(right);
-                    for (int j = 0; j < tileList.size(); j++){
-                        if (j == right && tilesRight.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(right,1);
-                        }else {
-                            MAP_NODES.get(i).add(0);
-                        }
-                    }
-                }
-
-                //en sağdaki
-                else if (i == 103) {
-                    int left = i + 1;
-                    Tiles tilesLeft = tileList.get(left);
-                    for (int j = 0; j < tileList.size(); j++){
-                        if (j == left && tilesLeft.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(left,1);
-                        }
-                        MAP_NODES.get(i).add(0);
-                    }
-                }
-                //other tiles
-                else {
-                    int left = i - 1;
-                    int right = i + 1;
-                    int down = i + 13;
-                    int up = i - 13;
-                    Tiles tilesLeft = tileList.get(left);
-                    Tiles tilesRight = tileList.get(right);
-                    Tiles tilesDown = tileList.get(down);
-                    Tiles tilesUp = tileList.get(up);
-                    for (int j = 0; j < tileList.size(); j++){
-                        if (j == left && tilesLeft.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(left,1);
-                        }
-                        else if (j == right && tilesRight.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(right,1);
-                        }
-                        else if (j == down && tilesDown.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(down,1);
-                        }
-                        else if (j == up && tilesUp.getTILE_TYPE().equals("PATH")) {
-                            MAP_NODES.get(i).add(up,1);
-                        }else {
-                            MAP_NODES.get(i).add(0);
-                        }
-                    }
-                }
-            }else {
-                // row'u 0 la doldur
-                for (int j = 0; j < tileList.size(); j++){
-                    MAP_NODES.get(i).add(0);
+                if (mapRow[j-1].equals("1")) {
+                    //path
+                    NODE_MATRIX[i-1][j-1] = new SingleNode(3,j-1,i-1);
+                }else {
+                    //wall
+                    NODE_MATRIX[i-1][j-1] = new SingleNode(2,j-1,i-1);
                 }
             }
-        }
-
-        print("TOTAL NODE SIZE: " + tileList.size());
-
-        /*for (List<Integer> list : MAP_NODES) {
-            for (int i : list) {
-                System.out.print(i + "\t");
-            }
-            System.out.print("\n");
-        }*/
-
-        int[][] MAP_ADJ = MAP_NODES.stream().map(  u  ->  u.stream().mapToInt(i->i).toArray()  ).toArray(int[][]::new);
-
-
-        print("MAP ADJ: ROW L \n" + MAP_ADJ.length);
-        print("MAP ADJ: COL L \n" + MAP_ADJ[0].length);
-        for (int[] map_matrix :  MAP_ADJ) {
-            for (int j = 0; j <  MAP_ADJ[0].length; j++) {
-                //System.out.print(map_matrix[j] + "\t");
-            }
-            //System.out.println("");
         }
 
         try {
@@ -201,10 +89,6 @@ public class Main extends Frame implements KeyListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        setTitle("Smurfs");
-        setSize(600,600);
-        setVisible(true);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -214,6 +98,37 @@ public class Main extends Frame implements KeyListener {
         addKeyListener(this);
     }
 
+    public class Node {
+        private int nType;
+        private int lastX;
+        private int lastY;
+        private int x;
+        private int y;
+        private int dist;
+
+
+        public Node(int type, int x, int y) {
+            nType = type;
+            this.x = x;
+            this.y = y;
+            dist = 0;
+        }
+
+        public int getX() {return x;}		//GET METHODS
+        public int getY() {return y;}
+        public int getLastX() {return lastX;}
+        public int getLastY() {return lastY;}
+        public int getType() {return nType;}
+        private int getDist() {return dist;}
+
+        public void setType(int type) {nType = type;}		//SET METHODS
+        public void setLastNode(int x, int y) {lastX = x; lastY = y;}
+        public void setDist(int dist){ this.dist = dist;}
+    }
+
+    public static void main(String[] args) {
+        new Main();
+    }
 
     @Override
     public void paint(Graphics g) {
@@ -264,10 +179,6 @@ public class Main extends Frame implements KeyListener {
         graphics2D.setColor(Color.decode("#000000"));
         graphics2D.drawString("Y: " + (MYSELF.getCoords_y()-1),500,550);
 
-    }
-
-    public static void main(String[] args) {
-        new Main();
     }
 
     @Override
