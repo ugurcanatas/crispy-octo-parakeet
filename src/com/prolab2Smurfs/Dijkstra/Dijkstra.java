@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class Dijkstra {
 
-   /* ArrayList<SingleNode> progress = new ArrayList<>();
+   ArrayList<SingleNode> progress = new ArrayList<>();
     SingleNode startNode;
     SingleNode[][] NODE_MATRIX;
     boolean solving = true;
@@ -41,28 +41,28 @@ public class Dijkstra {
         ArrayList<SingleNode> explored = new ArrayList<>();
         if (curr.getX() - 1 > -1) {
             SingleNode neighbor = this.NODE_MATRIX[curr.getX() - 1][curr.getY()];
-            if(neighbor.getNodeType() != 0 && neighbor.getNodeType() != 2 && neighbor.getDist() == 0) {
+            if(neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
                 explore(neighbor, curr.getX(), curr.getY(), dist);
                 explored.add(neighbor);
             }
         }
-        if(curr.getX() + 1 < 12) {
+        if(curr.getX() + 1 < 13) {
             SingleNode neighbor = this.NODE_MATRIX[curr.getX() + 1][curr.getY()];
-            if (neighbor.getNodeType() != 0 && neighbor.getNodeType() != 2 && neighbor.getDist() == 0) {
+            if (neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
                 explore(neighbor, curr.getX(), curr.getY(), dist);
                 explored.add(neighbor);
             }
         }
         if(curr.getY() - 1 > -1) {
             SingleNode neighbor = this.NODE_MATRIX[curr.getX()][curr.getY() - 1];
-            if(neighbor.getNodeType() != 0 && neighbor.getNodeType() != 2 && neighbor.getDist() == 0) {
+            if(neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
                 explore(neighbor, curr.getX(), curr.getY(), dist);
                 explored.add(neighbor);
             }
         }
-        if(curr.getY() + 1 < 12) {
+        if(curr.getY() + 1 < 13) {
             SingleNode neighbor = this.NODE_MATRIX[curr.getX()][curr.getY() + 1];
-            if (neighbor.getNodeType() != 0 && neighbor.getNodeType() != 2 && neighbor.getDist() == 0) {
+            if (neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
                 explore(neighbor, curr.getX(), curr.getY(), dist);
                 explored.add(neighbor);
             }
@@ -71,16 +71,16 @@ public class Dijkstra {
     }
 
     public void explore(SingleNode current, int lastx, int lasty, int dist){
-        if(current.getNodeType() != 1){
-            current.setNodeType(4);
+        if(current.getType() != 1){
+            current.setType(4);
             current.setLastNode(lastx,lasty);
-            current.setDistance(dist);
+            current.setDist(dist);
 
         }
 
-        if (current.getNodeType() == 1) {
+        if (current.getType() == 1) {
             current.setLastNode(lastx,lasty);
-            current.setDistance(dist);
+            current.setDist(dist);
             finalPath(current);
         }
     }
@@ -92,8 +92,8 @@ public class Dijkstra {
         int ly = current.getLastY();
         while(length > 1) {	//BACKTRACK FROM THE END OF THE PATH TO THE START
             current = this.NODE_MATRIX[lx][ly];
-            current.setNodeType(5);
-            System.out.println("PATH => " + current.getNodeType());
+            current.setType(5);
+            System.out.println("PATH => " + current.getType());
             System.out.println("PATH => " + lx + " - " + ly);
             System.out.println("-------------------");
             lx = current.getLastX();
@@ -107,9 +107,9 @@ public class Dijkstra {
         System.out.println("SHOWING RESULT");
         for (int i = 0; i < this.NODE_MATRIX.length; i++) {
             for (int j = 0; j < this.NODE_MATRIX[0].length; j++) {
-                System.out.print(this.NODE_MATRIX[i][j].getNodeType() + "\t");
+                System.out.print(this.NODE_MATRIX[i][j].getType() + "\t");
             }
             System.out.println("");
         }
-    }*/
+    }
 }

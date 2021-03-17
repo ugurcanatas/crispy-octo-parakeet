@@ -1,14 +1,12 @@
 package com.prolab2Smurfs.Utils;
 
 import com.prolab2Smurfs.Dijkstra.SingleNode;
-import com.prolab2Smurfs.Main;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static com.prolab2Smurfs.Utils.Constants.mapPath;
+import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class MapReader {
     private String mapString = "";
@@ -44,18 +42,18 @@ public class MapReader {
                     String [] row = data.split("\t");
                     for (int j = 0; j < row.length; j++) {
                         if (row[j].equals("1")) {
-                            nodes[i][j] = new SingleNode(3,j,i);
+                            nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
                         }else {
                             //WALL
-                            nodes[i][j] = new SingleNode(2,j,i);
+                            nodes[i][j] = new SingleNode(TYPE_WALL,i,j);
                         }
                     }
                     i++;
                 }
             }
             for (int k = 0; k < 13; k++) {
-                nodes[11][k] = new SingleNode(2,k,11);
-                nodes[12][k] = new SingleNode(2,k,12);
+                nodes[11][k] = new SingleNode(TYPE_WALL,k,11);
+                nodes[12][k] = new SingleNode(TYPE_WALL,k,12);
             }
         } catch (
                 FileNotFoundException e) {

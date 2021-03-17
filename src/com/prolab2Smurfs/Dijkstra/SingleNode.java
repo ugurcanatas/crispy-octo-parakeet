@@ -21,7 +21,7 @@ public class SingleNode {
     public int getLastX() {return lastX;}
     public int getLastY() {return lastY;}
     public int getType() {return nType;}
-    private int getDist() {return dist;}
+    public int getDist() {return dist;}
 
     public void setType(int type) {nType = type;}		//SET METHODS
     public void setLastNode(int x, int y) {lastX = x; lastY = y;}

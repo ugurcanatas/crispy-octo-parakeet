@@ -1,8 +1,6 @@
 package com.prolab2Smurfs;
 
 import com.prolab2Smurfs.Dijkstra.Dijkstra;
-import com.prolab2Smurfs.Dijkstra.Dugum;
-import com.prolab2Smurfs.Dijkstra.ShortestPath;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
 import com.prolab2Smurfs.PlayerClasses.Oyuncu;
@@ -20,15 +18,11 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class Main extends Frame implements KeyListener {
 
-    String mapString = "";
-    ArrayList<String> mapList;
     String c1,c2;
     ArrayList<Tiles> tileList = new ArrayList<>();
 
@@ -36,18 +30,27 @@ public class Main extends Frame implements KeyListener {
     Image playerImage;
 
     SingleNode[][] NODE_MATRIX;
-    int nodeRows = 13;
+    Tiles[][] TILE_MATRIX;
+    int nodeRows = 0;
+    int startx = 3;
+    int starty = 0;
+    int finishx = 6;
+    int finishy = 5;
+    SingleNode start = new SingleNode(0,startx,starty);
+    SingleNode dest = new SingleNode(1,finishx,finishy);
+    boolean solving = true;
 
     //Init Player Class
     Karakter MYSELF = new Oyuncu("MYSELF","MYSELF","GOZLUKLU",7,6,20);
 
     public Main() {
+        //Start reading the harita.txt file
         MapReader m = new MapReader();
         m.readMap();
-        mapString = m.getMapString();
-        mapList = m.getMapList();
-        NODE_MATRIX = new SingleNode[13][13];
+        //initialize 2D Node & 2D TileMap
         NODE_MATRIX = m.getNodes();
+        nodeRows = NODE_MATRIX.length;
+        TILE_MATRIX = new Tiles[nodeRows][nodeRows];
 
         for (int i = 0; i < nodeRows; i++) {
             for (int j = 0; j < nodeRows; j++) {
@@ -57,13 +60,35 @@ public class Main extends Frame implements KeyListener {
         }
 
         // This is going to determine y coords
-        for (int i = 1; i <= 13; i++) {
+        for (int i = 1; i <= nodeRows; i++) {
             // This is going to determine x coords
-            for (int j = 1; j <= 13; j++) {
-                //print("MAP ROW IS 1 OR 0" + mapRow[j]);
-                Tiles tile = new Tiles(BLOCK_W * j, BLOCK_H * i, NODE_MATRIX[i-1][j-1].getType(),j-1,i-1);
-                tileList.add(tile);
+            for (int j = 1; j <= nodeRows; j++) {
+                TILE_MATRIX[i-1][j-1] = new Tiles(BLOCK_W * j, BLOCK_H * i,
+                        NODE_MATRIX[i-1][j-1].getType(),
+                        j-1,i-1,
+                        true);
+                if (i > 11) {
+                    TILE_MATRIX[i-1][j-1].setVisible(false);
+                }
             }
+        }
+
+        NODE_MATRIX[6][5] = dest;
+        NODE_MATRIX[3][0] = start;
+
+
+        //new Algorithm().Dijkstra();
+
+        //Dijkstra d = new Dijkstra(start,NODE_MATRIX);
+        //d.start();
+
+        System.out.println("");
+        System.out.println("");
+        for (int i = 0; i < nodeRows; i++) {
+            for (int j = 0; j < nodeRows; j++) {
+                System.out.print(NODE_MATRIX[i][j].getType() + " \t");
+            }
+            System.out.println("");
         }
 
         try {
@@ -73,7 +98,7 @@ public class Main extends Frame implements KeyListener {
             e.printStackTrace();
         }
         setTitle("Smurfs");
-        setSize(600,600);
+        setSize(WINDOW_W,WINDOW_H);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -96,48 +121,59 @@ public class Main extends Frame implements KeyListener {
 
         Graphics2D graphics2D = (Graphics2D)g;
 
-        //TYPE 2 WALL, TYPE 3 PATH
-        //Draw map tiles
-        for (int i = 0; i < tileList.size(); i++) {
-            String TILE_TYPE = tileList.get(i).getTILE_TYPE();
-            int [] xy = tileList.get(i).getXY();
-            if (TILE_TYPE.equals("WALL")) {
-                graphics2D.setColor(Color.decode("#000000"));
-                Stroke s = graphics2D.getStroke();
-                graphics2D.setStroke(new BasicStroke(2));
-                graphics2D.drawRect(xy[0],xy[1],BLOCK_W,BLOCK_H);
-                graphics2D.setStroke(s);
-                //Draw wall
-                graphics2D.setColor(Color.decode("#9e9e9e"));
-                graphics2D.fillRect(xy[0],xy[1],BLOCK_W,BLOCK_H);
-                graphics2D.setColor(Color.decode("#000000"));
-                ///graphics2D.drawString(String.valueOf(i),xy[0] + 15,xy[1] + 30);
-            }else {
-                //Draw stroke
-                graphics2D.setColor(Color.decode("#000000"));
-                Stroke s = graphics2D.getStroke();
-                graphics2D.setStroke(new BasicStroke(2));
-                graphics2D.drawRect(xy[0],xy[1],BLOCK_W,BLOCK_H);
-                graphics2D.setStroke(s);
-
-
-                //Draw path
-                graphics2D.setColor(Color.decode("#d9d9d9"));
-                graphics2D.fillRect(xy[0],xy[1],BLOCK_W,BLOCK_H);
+        for (int i = 0; i < nodeRows; i++) {
+            for (int j = 0; j < nodeRows; j++) {
+                Tiles tile = TILE_MATRIX[i][j];
+                int tiletype = tile.getTILE_TYPE();
+                boolean isVisibleTile = tile.isVisible();
+                int x = tile.getX();
+                int y = tile.getY();
+                //Dont print last two rows that are not visible
+                if (isVisibleTile) {
+                    switch (tiletype) {
+                        case TYPE_WALL:
+                            graphics2D.setColor(Color.decode("#000000"));
+                            Stroke s = graphics2D.getStroke();
+                            graphics2D.setStroke(new BasicStroke(2));
+                            graphics2D.drawRect(x,y,BLOCK_W,BLOCK_H);
+                            graphics2D.setStroke(s);
+                            graphics2D.setColor(Color.decode("#9e9e9e"));
+                            graphics2D.fillRect(x,y,BLOCK_W,BLOCK_H);
+                            break;
+                        case TYPE_PATH:
+                            graphics2D.setColor(Color.decode("#000000"));
+                            Stroke p = graphics2D.getStroke();
+                            graphics2D.setStroke(new BasicStroke(2));
+                            graphics2D.drawRect(x,y,BLOCK_W,BLOCK_H);
+                            graphics2D.setStroke(p);
+                            //Draw path
+                            graphics2D.setColor(Color.decode("#d9d9d9"));
+                            graphics2D.fillRect(x,y,BLOCK_W,BLOCK_H);
+                            break;
+                        case TYPE_DESTINATION:
+                            break;
+                        case TYPE_START:
+                            break;
+                        case TYPE_FINAL:
+                            break;
+                    }
+                    //graphics2D.setColor(Color.decode("#000000"));
+                    //graphics2D.drawString(tile.getCoord_x() + "," + tile.getCoord_y(),x + 15,y + 15);
+                }
             }
         }
 
-        graphics2D.drawImage(smurfetteImage,13*BLOCK_W,8*BLOCK_H,40,40,null);
+        //graphics2D.drawImage(smurfetteImage,13*BLOCK_W,8*BLOCK_H,40,40,null);
 
         //DRAW MYSELF 👻
-        graphics2D.drawImage(playerImage,BLOCK_W * MYSELF.getCoords_x(),BLOCK_H * MYSELF.getCoords_y(),40,40,null);
+        //graphics2D.drawImage(playerImage,BLOCK_W * MYSELF.getCoords_x(),BLOCK_H * MYSELF.getCoords_y(),40,40,null);
 
         // Draw x,y coords
-        graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("X: " + (MYSELF.getCoords_x()-1),500,525);
+        //graphics2D.setColor(Color.decode("#000000"));
+        //graphics2D.drawString("X: " + (MYSELF.getCoords_x()-1),500,525);
 
-        graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("Y: " + (MYSELF.getCoords_y()-1),500,550);
+        //graphics2D.setColor(Color.decode("#000000"));
+        //graphics2D.drawString("Y: " + (MYSELF.getCoords_y()-1),500,550);
 
     }
 
@@ -150,9 +186,9 @@ public class Main extends Frame implements KeyListener {
         //calculate tile index
         int index = (tempX - 1) + 13*(tempY-1);
         //Get tile type
-        String tiletype = tileList.get(index).getTILE_TYPE();
+        int tiletype = tileList.get(index).getTILE_TYPE();
         //Check if it's a wall or not & return
-        return tiletype.equals("WALL");
+        return tiletype == TYPE_WALL;
     }
 
     @Override
