@@ -47,7 +47,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
     public Main() {
         setTitle("Smurfs");
         setSize(WINDOW_W,WINDOW_H);
-        setVisible(true);
 
         //Start reading the harita.txt file
         mapReader.readMap();
@@ -84,6 +83,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
             System.out.println("");
         }
 
+        setVisible(true);
         repaint();
 
         try {

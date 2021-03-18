@@ -23,4 +23,10 @@ public class Constants {
     public static final int playerDefStartX = 6;
     public static final int playerDefStartY = 5;
     public static final int playerDefPoints = 20;
+
+    public static final int[] GATE_A_COORDS = {3,0};
+    public static final int[] GATE_B_COORDS = {10,0};
+    public static final int[] GATE_C_COORDS = {0,5};
+    public static final int[] GATE_D_COORDS = {3,10};
+
 }

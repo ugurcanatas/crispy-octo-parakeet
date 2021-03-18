@@ -1,11 +1,11 @@
 package com.prolab2Smurfs.Utils;
 
 import com.prolab2Smurfs.Dijkstra.SingleNode;
+import com.prolab2Smurfs.PlayerClasses.Dusman;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
@@ -13,6 +13,8 @@ public class MapReader{
     private SingleNode[][] nodes;
     private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
+    ArrayList<String> enemies = new ArrayList<>();
+    HashMap<String,String> characterHash = new HashMap<>();
 
     public MapReader() {}
 
@@ -22,6 +24,10 @@ public class MapReader{
 
     public SingleNode[][] getCloned() {
         return cloned;
+    }
+
+    public HashMap<String, String> getCharacterHash() {
+        return characterHash;
     }
 
     public Tiles[][] getFixedTiles() {
@@ -42,11 +48,24 @@ public class MapReader{
                 //Look at the lines that is bigger than certain number
                 if (arr.length > 4) {
                     grid.add(arr);
-                }//else part is characters
+                }else {
+                    //Characters.
+                    enemies.add(arr[0]);
+                }
             }
 
             //Close file reader
             reader.close();
+
+            for (String item : enemies) {
+                String[] splitted = item.split(",");
+                String character = splitted[0].split(":")[1];
+                String gate = splitted[1].split(":")[1];
+                System.out.println("ENEMY INFO:");
+                System.out.println("CHARACTER: " + character);
+                System.out.println("GATE: " + gate);
+                characterHash.put(character,gate);
+            }
 
             //Initialize 2D Nodes array & 2D FixedTiles array.
             nodes = new SingleNode[grid.get(0).length][grid.size()];
