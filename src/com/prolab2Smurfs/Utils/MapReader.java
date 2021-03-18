@@ -2,6 +2,10 @@ package com.prolab2Smurfs.Utils;
 
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
+import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.Azman;
+import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
+import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.Gargamel;
+import com.prolab2Smurfs.PlayerClasses.Karakter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,9 +18,18 @@ public class MapReader{
     private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
     ArrayList<String> enemies = new ArrayList<>();
-    HashMap<String,String> characterHash = new HashMap<>();
+    HashMap<String,Dusman> enemiesHashset = new HashMap<>();
 
-    public MapReader() {}
+    HashMap<String,int[]> gates = new HashMap<>();
+
+    public MapReader() {
+        //add gates at the beginning
+        gates.put("A",GATE_A_COORDS);
+        gates.put("B",GATE_B_COORDS);
+        gates.put("C",GATE_C_COORDS);
+        gates.put("D",GATE_D_COORDS);
+
+    }
 
     public SingleNode[][] getNodes() {
         return nodes;
@@ -26,8 +39,8 @@ public class MapReader{
         return cloned;
     }
 
-    public HashMap<String, String> getCharacterHash() {
-        return characterHash;
+    public HashMap<String, Dusman> getCharacterHash() {
+        return enemiesHashset;
     }
 
     public Tiles[][] getFixedTiles() {
@@ -64,7 +77,16 @@ public class MapReader{
                 System.out.println("ENEMY INFO:");
                 System.out.println("CHARACTER: " + character);
                 System.out.println("GATE: " + gate);
-                characterHash.put(character,gate);
+                int[] gatecoords = gates.get(gate);
+                DusmanLokasyon dusmanLokasyon = new DusmanLokasyon(gatecoords[0],gatecoords[1]);
+                if (character.equals("Azman")) {
+                    Azman a = (Azman) new Dusman(character,character, character,dusmanLokasyon);
+                    enemiesHashset.put(character,a);
+                }else {
+                    Gargamel a = (Gargamel) new Dusman(character,character, character,dusmanLokasyon);
+                    enemiesHashset.put(character,a);
+                }
+
             }
 
             //Initialize 2D Nodes array & 2D FixedTiles array.

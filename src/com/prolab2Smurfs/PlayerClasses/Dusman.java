@@ -6,6 +6,14 @@ public class Dusman extends Karakter {
     private String dusmanID, dusmanAdi, dusmanTur;
     private DusmanLokasyon dusmanLokasyon;
 
+    public Dusman(String ID, String ad, String tur, DusmanLokasyon dusmanLokasyon) {
+        super(ID, ad, tur);
+        this.dusmanID = ID;
+        this.dusmanAdi = ad;
+        this.dusmanTur = tur;
+        this.dusmanLokasyon = dusmanLokasyon;
+    }
+
     public Dusman(String ID, String ad, String tur, int coords_x, int coords_y, DusmanLokasyon dusmanLokasyon) {
         super(ID, ad, tur, coords_x, coords_y);
         this.dusmanID = ID;
