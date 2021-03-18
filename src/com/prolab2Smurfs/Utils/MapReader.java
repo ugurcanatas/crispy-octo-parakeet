@@ -11,24 +11,19 @@ import java.util.Scanner;
 import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class MapReader {
-    private String mapString = "";
-    private ArrayList<String> mapList = new ArrayList<>();
-
-    private SingleNode[][] nodes = new SingleNode[13][11];
+    private SingleNode[][] nodes;
+    private Tiles[][] fixedTiles;
 
     public MapReader() {
-    }
 
-    public String getMapString() {
-        return mapString;
-    }
-
-    public ArrayList<String> getMapList() {
-        return mapList;
     }
 
     public SingleNode[][] getNodes() {
         return nodes;
+    }
+
+    public Tiles[][] getFixedTiles() {
+        return fixedTiles;
     }
 
     public void readMap () {
@@ -48,6 +43,8 @@ public class MapReader {
             }
             System.out.println("ROWS: " + grid.size());
             System.out.println("COLS: " + grid.get(0).length);
+            nodes = new SingleNode[grid.get(0).length][grid.size()];
+            fixedTiles = new Tiles[grid.get(0).length][grid.size()];
 
             //< 13
             for (int i = 0; i < grid.get(0).length; i++) {
@@ -56,8 +53,10 @@ public class MapReader {
                     String type = grid.get(j)[i];
                     if (type.equals("1")) {
                         nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
+                        fixedTiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
                     } else {
                         nodes[i][j] = new SingleNode(TYPE_WALL,i,j);
+                        fixedTiles[i][j] = new Tiles(i,j,TYPE_WALL,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
                     }
                 }
             }

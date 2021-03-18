@@ -3,25 +3,31 @@ package com.prolab2Smurfs.Utils;
 public class Tiles {
     private int x;
     private int y;
-    private int coord_x, coord_y;
+    private int windowPositionX, windowPositionY;
     private int TILE_TYPE;
-    private boolean isVisible;
 
-    public Tiles (int x, int y, int TILE_TYPE, int coord_x, int coord_y, boolean isVisible) {
+    public Tiles (int x, int y, int TILE_TYPE, int windowPositionX, int windowPositionY) {
         this.x = x;
         this.y = y;
         this.TILE_TYPE = TILE_TYPE;
-        this.coord_x = coord_x;
-        this.coord_y = coord_y;
-        this.isVisible = isVisible;
+        this.windowPositionX = windowPositionX;
+        this.windowPositionY = windowPositionY;
     }
 
-    public boolean isVisible() {
-        return isVisible;
+    public int getWindowPositionX() {
+        return windowPositionX;
     }
 
-    public void setVisible(boolean visible) {
-        isVisible = visible;
+    public void setWindowPositionX(int windowPositionX) {
+        this.windowPositionX = windowPositionX;
+    }
+
+    public int getWindowPositionY() {
+        return windowPositionY;
+    }
+
+    public void setWindowPositionY(int windowPositionY) {
+        this.windowPositionY = windowPositionY;
     }
 
     public int getX() {
@@ -40,33 +46,11 @@ public class Tiles {
         this.y = y;
     }
 
-    public int getCoord_x() {
-        return coord_x;
-    }
-
-    public void setCoord_x(int coord_x) {
-        this.coord_x = coord_x;
-    }
-
-    public int getCoord_y() {
-        return coord_y;
-    }
-
-    public void setCoord_y(int coord_y) {
-        this.coord_y = coord_y;
-    }
-
     public void setTILE_TYPE(int TILE_TYPE) {
         this.TILE_TYPE = TILE_TYPE;
     }
 
     public int getTILE_TYPE() {
         return TILE_TYPE;
-        /*return switch (TILE_TYPE) {
-            case 2 -> "WALL";
-            case 3 -> "PATH";
-            case 5 -> "ROUTE";
-            default -> "";
-        };*/
     }
 }

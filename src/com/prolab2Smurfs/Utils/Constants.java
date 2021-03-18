@@ -10,6 +10,7 @@ public class Constants {
 
     public static final int BLOCK_W = 40;
     public static final int BLOCK_H = 40;
+    public static final int BLOCK_DIMEN = 40;
 
     public static final int WINDOW_W = 800;
     public static final int WINDOW_H = 800;
@@ -20,4 +21,9 @@ public class Constants {
     public static final int TYPE_DESTINATION = 3;
     public static final int TYPE_CHECKED = 4;
     public static final int TYPE_FINAL = 5;
+
+
+    public static final int playerDefStartX = 6;
+    public static final int playerDefStartY = 5;
+    public static final int playerDefPoints = 20;
 }
