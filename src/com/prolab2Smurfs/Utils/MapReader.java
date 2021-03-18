@@ -4,7 +4,6 @@ import com.prolab2Smurfs.Dijkstra.SingleNode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -14,9 +13,7 @@ public class MapReader {
     private SingleNode[][] nodes;
     private Tiles[][] fixedTiles;
 
-    public MapReader() {
-
-    }
+    public MapReader() {}
 
     public SingleNode[][] getNodes() {
         return nodes;
@@ -32,25 +29,32 @@ public class MapReader {
             Scanner reader = new Scanner(file);
 
             ArrayList<String[]> grid = new ArrayList<>();
+            //Reading the text file
             while (reader.hasNextLine()) {
                 String data = reader.nextLine();
+                //Split read line
                 String[] arr = data.split("\t");
-                System.out.println("READING" + Arrays.toString(arr));
-                //testing
+                //Look at the lines that is bigger than certain number
                 if (arr.length > 4) {
                     grid.add(arr);
                 }//else part is characters
             }
-            System.out.println("ROWS: " + grid.size());
-            System.out.println("COLS: " + grid.get(0).length);
+
+            //Close file reader
+            reader.close();
+
+            //Initialize 2D Nodes array & 2D FixedTiles array.
             nodes = new SingleNode[grid.get(0).length][grid.size()];
             fixedTiles = new Tiles[grid.get(0).length][grid.size()];
 
-            //< 13
+            // First loop is rows (13 length)
             for (int i = 0; i < grid.get(0).length; i++) {
-                // < 11
+                // Second loop is cols (11 length)
                 for (int j = 0; j < grid.size(); j++) {
+                    //Pick string. (1 or 0)
                     String type = grid.get(j)[i];
+                    //If string is 1 than it's a path else it's a wall.
+                    //Add to nodes & fixed tiles 2d arrays.
                     if (type.equals("1")) {
                         nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
                         fixedTiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
@@ -60,20 +64,13 @@ public class MapReader {
                     }
                 }
             }
-
-            System.out.println("");
-            for (int k = 0; k < 13; k++) {
-                for (int z = 0; z < 11; z++) {
-                    System.out.print(nodes[k][z].getType() + " \t");
-                }
-                System.out.println("");
-            }
         } catch (
                 FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    // Returns 1 or 0 to pick a random player
     public int getRandomCharacter () {
         return new Random().nextInt(2);
     }
