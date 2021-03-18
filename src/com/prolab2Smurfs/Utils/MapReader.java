@@ -9,14 +9,19 @@ import java.util.Scanner;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class MapReader {
+public class MapReader{
     private SingleNode[][] nodes;
+    private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
 
     public MapReader() {}
 
     public SingleNode[][] getNodes() {
         return nodes;
+    }
+
+    public SingleNode[][] getCloned() {
+        return cloned;
     }
 
     public Tiles[][] getFixedTiles() {
@@ -45,6 +50,7 @@ public class MapReader {
 
             //Initialize 2D Nodes array & 2D FixedTiles array.
             nodes = new SingleNode[grid.get(0).length][grid.size()];
+            cloned = new SingleNode[grid.get(0).length][grid.size()];
             fixedTiles = new Tiles[grid.get(0).length][grid.size()];
 
             // First loop is rows (13 length)
@@ -57,9 +63,11 @@ public class MapReader {
                     //Add to nodes & fixed tiles 2d arrays.
                     if (type.equals("1")) {
                         nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
+                        cloned[i][j] = new SingleNode(TYPE_PATH,i,j);
                         fixedTiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
                     } else {
                         nodes[i][j] = new SingleNode(TYPE_WALL,i,j);
+                        cloned[i][j] = new SingleNode(TYPE_WALL,i,j);
                         fixedTiles[i][j] = new Tiles(i,j,TYPE_WALL,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
                     }
                 }
@@ -74,6 +82,4 @@ public class MapReader {
     public int getRandomCharacter () {
         return new Random().nextInt(2);
     }
-
-
 }
