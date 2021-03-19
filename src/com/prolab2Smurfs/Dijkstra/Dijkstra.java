@@ -28,6 +28,7 @@ public class Dijkstra {
     }
 
     public void reset () {
+        progress = new ArrayList<>();
         this.solving = true;
     }
 
@@ -40,15 +41,15 @@ public class Dijkstra {
     }
 
     public void setStartPoint(int x, int y) {
-        this.NODE_MATRIX[x][y].setType(TYPE_START);
+        this.NODE_MATRIX[x][y] = new SingleNode(TYPE_START,x,y);
     }
 
     public void setDestinationPoint (int x, int y) {
-        this.NODE_MATRIX[x][y].setType(TYPE_DESTINATION);
+        this.NODE_MATRIX[x][y] = new SingleNode(TYPE_DESTINATION,x,y);
     }
 
     public void setNodes (int x, int y, int TYPE) {
-        this.NODE_MATRIX[x][y].setType(TYPE);
+        this.NODE_MATRIX[x][y] = new SingleNode(TYPE,x,y);
     }
 
     public void start() {

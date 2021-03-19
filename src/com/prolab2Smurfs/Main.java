@@ -66,7 +66,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
             Dusman enemyObject = entry.getValue();
             print("ID 1: " + enemyObject.getDusmanID());
             print("ID 2: " + enemyObject.getID());
-
             //Solve on first load
             enemyObject.start();
 
@@ -170,24 +169,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
             int enemyX = enemyObject.getDusmanLokasyon().getX();
             int enemyY = enemyObject.getDusmanLokasyon().getY();
 
-            System.out.println("CHECK TEMP");
             for (int i = 0; i < NODE_CLONED.length; i++) {
                 for (int j = 0; j < NODE_CLONED[0].length; j++) {
-                    System.out.print(NODE_CLONED[i][j].getType() + " \t");
-                    enemyObject.getNODE_MATRIX()[i][j] = new SingleNode(NODE_CLONED[i][j].getType(),i,j);
-                    //enemyObject.setNodes(i,j,NODE_CLONED[i][j].getType());
+                    enemyObject.setNodes(i,j,NODE_CLONED[i][j].getType());
                 }
-                System.out.println("");
             }
-            SingleNode start = new SingleNode(TYPE_START,enemyX,enemyY);
-            Dijkstra d = new Dijkstra(start,enemyObject.getNODE_MATRIX(),this,enemyObject.getDusmanID());
-            d.setDestinationPoint(playerX,playerY);
-            d.reset();
-            d.start();
-
-
-            System.out.println("PRINTING FOR ENEMY MAP::");
-
+            enemyObject.setDestinationPoint(playerX,playerY);
+            enemyObject.setStartPoint(enemyX,enemyY);
+            enemyObject.start();
         }
     }
 
