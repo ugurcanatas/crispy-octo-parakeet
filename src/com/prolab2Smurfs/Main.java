@@ -6,6 +6,7 @@ package com.prolab2Smurfs;
 
 import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
+import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
 import com.prolab2Smurfs.PlayerClasses.Oyuncu;
 import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.GozlukluSirin;
@@ -22,7 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
@@ -43,6 +44,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
     //Init Player Class
     Karakter PLAYER = new Oyuncu();
     MapReader mapReader = new MapReader();
+
+    Queue<Dijkstra> dijkstraQueue = new LinkedList<>();
 
     public Main() {
         setTitle("Smurfs");
@@ -71,6 +74,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
         NODE_MATRIX[3][0] = new SingleNode(TYPE_START,3,0); //Change this to enemy player
         NODE_MATRIX[6][5] = new SingleNode(TYPE_DESTINATION,6,5);
 
+        HashMap<String, Dusman> cMap = mapReader.getCharacterHash();
+        for (Map.Entry<String, Dusman> entry : cMap.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+            String enemyName = entry.getKey();
+            print("ID 1: " + enemyObject.getDusmanID());
+            print("ID 2: " + enemyObject.getID());
+        }
+        //dijkstraQueue.add();
 
         algo = new Dijkstra(start,NODE_MATRIX,this);
         algo.start();

@@ -70,8 +70,8 @@ public class MapReader{
             //Close file reader
             reader.close();
 
-            for (String item : enemies) {
-                String[] splitted = item.split(",");
+            for (int i = 0; i < enemies.size(); i++) {
+                String[] splitted = enemies.get(i).split(",");
                 String character = splitted[0].split(":")[1];
                 String gate = splitted[1].split(":")[1];
                 System.out.println("ENEMY INFO:");
@@ -79,12 +79,13 @@ public class MapReader{
                 System.out.println("GATE: " + gate);
                 int[] gatecoords = gates.get(gate);
                 DusmanLokasyon dusmanLokasyon = new DusmanLokasyon(gatecoords[0],gatecoords[1]);
+                String ID = character.concat("-" + i);
                 if (character.equals("Azman")) {
-                    Azman a = (Azman) new Dusman(character,character, character,dusmanLokasyon);
-                    enemiesHashset.put(character,a);
+                    Dusman a = new Azman(ID,character, character,dusmanLokasyon);
+                    enemiesHashset.put(ID,a);
                 }else {
-                    Gargamel a = (Gargamel) new Dusman(character,character, character,dusmanLokasyon);
-                    enemiesHashset.put(character,a);
+                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon);
+                    enemiesHashset.put(ID,a);
                 }
 
             }
