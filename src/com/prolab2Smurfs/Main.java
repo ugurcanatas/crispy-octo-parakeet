@@ -169,11 +169,13 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
             int enemyX = enemyObject.getDusmanLokasyon().getX();
             int enemyY = enemyObject.getDusmanLokasyon().getY();
 
-            for (int i = 0; i < NODE_CLONED.length; i++) {
+            enemyObject.setNODE_MATRIX(NODE_CLONED);
+
+            /*for (int i = 0; i < NODE_CLONED.length; i++) {
                 for (int j = 0; j < NODE_CLONED[0].length; j++) {
                     enemyObject.setNodes(i,j,NODE_CLONED[i][j].getType());
                 }
-            }
+            }*/
             enemyObject.setDestinationPoint(playerX,playerY);
             enemyObject.setStartPoint(enemyX,enemyY);
             enemyObject.start();
@@ -275,6 +277,16 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
                 break;
             default:
         }
+        //Enemy Movements
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+
+            int playerX = PLAYER.getCoords_x();
+            int playerY = PLAYER.getCoords_y();
+            int enemyX = enemyObject.getDusmanLokasyon().getX();
+            int enemyY = enemyObject.getDusmanLokasyon().getY();
+        }
+
         //repaint after moving the character
         repaint();
     }

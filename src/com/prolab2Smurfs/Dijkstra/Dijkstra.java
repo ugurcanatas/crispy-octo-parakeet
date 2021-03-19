@@ -32,8 +32,12 @@ public class Dijkstra {
         this.solving = true;
     }
 
-    public void setNODE_MATRIX(SingleNode[][] NODE_MATRIX) {
-        this.NODE_MATRIX = NODE_MATRIX;
+    public void setNODE_MATRIX(SingleNode[][] CLONED) {
+        for (int i = 0; i < CLONED.length; i++) {
+            for (int j = 0; j < CLONED[0].length; j++) {
+                setNodes(i,j,CLONED[i][j].getType());
+            }
+        }
     }
 
     public SingleNode[][] getNODE_MATRIX() {
