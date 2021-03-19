@@ -11,6 +11,7 @@ public class Dijkstra {
     SingleNode[][] NODE_MATRIX;
     boolean solving = true;
     OnResult onResult;
+    String FROM_ID;
 
     public Dijkstra() {
     }
@@ -19,10 +20,15 @@ public class Dijkstra {
         this.onResult = onResult;
     }
 
-    public Dijkstra(SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult) {
+    public Dijkstra(SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult, String FROM_ID) {
         this.startNode = startNode;
         this.NODE_MATRIX = NODE_MATRIX;
         this.onResult = onResult;
+        this.FROM_ID = FROM_ID;
+    }
+
+    public void reset () {
+        this.solving = true;
     }
 
     public void setNODE_MATRIX(SingleNode[][] NODE_MATRIX) {
@@ -31,6 +37,18 @@ public class Dijkstra {
 
     public SingleNode[][] getNODE_MATRIX() {
         return NODE_MATRIX;
+    }
+
+    public void setStartPoint(int x, int y) {
+        this.NODE_MATRIX[x][y].setType(TYPE_START);
+    }
+
+    public void setDestinationPoint (int x, int y) {
+        this.NODE_MATRIX[x][y].setType(TYPE_DESTINATION);
+    }
+
+    public void setNodes (int x, int y, int TYPE) {
+        this.NODE_MATRIX[x][y].setType(TYPE);
     }
 
     public void start() {
@@ -119,10 +137,10 @@ public class Dijkstra {
             finalNodes.add(current);
         }
         solving = false;
-        onResult.OnDijkstraResult(finalNodes);
+        onResult.OnDijkstraResult(finalNodes, this.FROM_ID);
     }
 
     public interface OnResult{
-        void OnDijkstraResult(ArrayList<SingleNode> nodes);
+        void OnDijkstraResult(ArrayList<SingleNode> nodes, String FROM_ID);
     }
 }

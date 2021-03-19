@@ -27,7 +27,7 @@ public class Karakter extends Dijkstra {
 
     public Karakter(String ID, String ad, String tur, int coords_x, int coords_y,
                     SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult) {
-        super(startNode,NODE_MATRIX,onResult);
+        super(startNode,NODE_MATRIX,onResult,ID);
         this.ID = ID;
         Ad = ad;
         Tur = tur;

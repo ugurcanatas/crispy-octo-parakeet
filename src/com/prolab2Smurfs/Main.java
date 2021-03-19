@@ -8,14 +8,11 @@ import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
-import com.prolab2Smurfs.PlayerClasses.Oyuncu;
-import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.GozlukluSirin;
-import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.TembelSirin;
 import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
+import org.w3c.dom.Node;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,32 +21,24 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
-
 import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
-    Dijkstra algo;
-
     Image smurfetteImage;
     Image playerImage;
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
     Tiles[][] FIXED_TILES;
-    int nodeRows = 0;
     int startx = 3;
     int starty = 0;
     SingleNode start = new SingleNode(TYPE_START,startx,starty);
 
     //Init Player Class
-    Karakter PLAYER = new Oyuncu();
-    MapReader mapReader = new MapReader();
+    public Karakter PLAYER;
+    public MapReader mapReader = new MapReader();
 
-    Queue<Dijkstra> dijkstraQueue = new LinkedList<>();
-
-    HashMap<String, Dusman> enemiesHash = new HashMap<>();
-    List<Dusman> enemiesList = new ArrayList<>();
+    public HashMap<String, Dusman> enemiesHash;
 
     public Main() {
         setTitle("Smurfs");
@@ -57,60 +46,42 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
 
         //Start reading the harita.txt file
         mapReader.readMap();
-        int character = mapReader.getRandomCharacter();
-        //Select random player
-        switch (character) {
-            case 0 -> PLAYER = new Oyuncu("PLAYER", "PLAYER", "GOZLUKLU",
-                    playerDefStartX, playerDefStartY, playerDefPoints);
-            case 1 -> PLAYER = new Oyuncu("PLAYER", "PLAYER", "TEMBEL",
-                    playerDefStartX, playerDefStartY, playerDefPoints);
-        }
-        print("KARAKTER PLAYER: " + character);
-
-        //initialize 2D Node & 2D TileMap
-        NODE_MATRIX = mapReader.getNodes();
-        NODE_CLONED = mapReader.getCloned();
-
-        FIXED_TILES = mapReader.getFixedTiles();
-        nodeRows = NODE_MATRIX.length;
-
-        //init start & destination nodes
-        //NODE_MATRIX[3][0] = new SingleNode(TYPE_START,3,0); //Change this to enemy player
-        NODE_MATRIX[6][5] = new SingleNode(TYPE_DESTINATION,6,5);
-
-        enemiesHash = mapReader.getCharacterHash();
-        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
-            Dusman enemyObject = entry.getValue();
-            String enemyName = entry.getKey();
-            print("ID 1: " + enemyObject.getDusmanID());
-            print("ID 2: " + enemyObject.getID());
-
-            int x = enemyObject.getDusmanLokasyon().getX();
-            int y = enemyObject.getDusmanLokasyon().getY();
-            enemiesList.add(enemyObject);
-            NODE_MATRIX[x][y] = new SingleNode(TYPE_START,x,y);
-        }
-
-        //algo = new Dijkstra(start,NODE_MATRIX,this);
-        //algo.start();
-
-        System.out.println("");
-        for (int i = 0; i < nodeRows; i++) {
-            for (int j = 0; j < NODE_MATRIX[0].length; j++) {
-                System.out.print(NODE_MATRIX[i][j].getType() + " \t");
-            }
-            System.out.println("");
-        }
-
-        setVisible(true);
-        repaint();
-
+        PLAYER = mapReader.getPLAYER();
+        //Load assets after initializing the PLAYER object
         try {
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //initialize 2D Node & 2D TileMap
+        NODE_MATRIX = mapReader.getNodes();
+        NODE_CLONED = mapReader.getCloned();
+
+        FIXED_TILES = mapReader.getFixedTiles();
+
+        enemiesHash = mapReader.getCharacterHash();
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+            print("ID 1: " + enemyObject.getDusmanID());
+            print("ID 2: " + enemyObject.getID());
+
+            //Solve on first load
+            enemyObject.start();
+
+            System.out.println("PRINTING FOR ENEMY MAP::");
+            for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
+                for (int j = 0; j < enemyObject.getNODE_MATRIX()[0].length; j++) {
+                    System.out.print(enemyObject.getNODE_MATRIX()[i][j].getType() + " \t");
+                }
+                System.out.println("");
+            }
+        }
+
+        setFocusable(true);
+        setVisible(true);
+        repaint();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -156,29 +127,67 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
         }
     }
 
-    private void drawDynamics (Graphics2D graphics2D) {
-        for (SingleNode[] node_matrix : NODE_MATRIX) {
-            for (int j = 0; j < NODE_MATRIX[0].length; j++) {
-                SingleNode node = node_matrix[j];
-                int tiletype = node.getType();
-                int x = node.getX();
-                int y = node.getY();
-                switch (tiletype) {
-                    case TYPE_START -> {
-                        graphics2D.setColor(Color.green);
-                        graphics2D.fillRect((x + 1) * BLOCK_DIMEN, (y + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
-                    }
-                    case TYPE_DESTINATION -> {
-                        //this is the player
-                        graphics2D.setColor(Color.red);
-                        graphics2D.fillRect((PLAYER.getCoords_x() + 1) * BLOCK_DIMEN, (PLAYER.getCoords_y() + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
-                    }
-                    case TYPE_FINAL -> {
+    private void drawCharacters (Graphics2D graphics2D) {
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+            int enemyX = enemyObject.getDusmanLokasyon().getX();
+            int enemyY = enemyObject.getDusmanLokasyon().getY();
+            graphics2D.setColor(Color.green);
+            graphics2D.fillRect((enemyX + 1) * BLOCK_DIMEN, (enemyY + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
+
+            //Draw route
+            for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
+                for (int j = 0; j < enemyObject.getNODE_MATRIX()[0].length; j++) {
+                    SingleNode node = enemyObject.getNODE_MATRIX()[i][j];
+                    if (node.getType()==TYPE_FINAL) {
+                        int finalX = node.getX();
+                        int finalY = node.getY();
+                        System.out.println("Drawing final path");
                         graphics2D.setColor(new Color(243, 123, 44, 50));
-                        graphics2D.fillRect((x + 1) * BLOCK_DIMEN, (y + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
+                        graphics2D.fillRect((finalX + 1) * BLOCK_DIMEN, (finalY + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
                     }
                 }
             }
+        }
+    }
+
+    private void drawPlayer(Graphics2D graphics2D) {
+        int playerX = PLAYER.getCoords_x();
+        int playerY = PLAYER.getCoords_y();
+        graphics2D.drawImage(playerImage,(playerX+1)*BLOCK_DIMEN,(playerY+1)*BLOCK_DIMEN,
+                BLOCK_DIMEN,BLOCK_DIMEN,null);
+    }
+
+    //resets dijkstra maps for all enemy characters
+    private void resetDijkstraArray () {
+        System.out.println("RESET ARRAY");
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+            enemyObject.reset();
+
+            int playerX = PLAYER.getCoords_x();
+            int playerY = PLAYER.getCoords_y();
+            int enemyX = enemyObject.getDusmanLokasyon().getX();
+            int enemyY = enemyObject.getDusmanLokasyon().getY();
+
+            System.out.println("CHECK TEMP");
+            for (int i = 0; i < NODE_CLONED.length; i++) {
+                for (int j = 0; j < NODE_CLONED[0].length; j++) {
+                    System.out.print(NODE_CLONED[i][j].getType() + " \t");
+                    enemyObject.getNODE_MATRIX()[i][j] = new SingleNode(NODE_CLONED[i][j].getType(),i,j);
+                    //enemyObject.setNodes(i,j,NODE_CLONED[i][j].getType());
+                }
+                System.out.println("");
+            }
+            SingleNode start = new SingleNode(TYPE_START,enemyX,enemyY);
+            Dijkstra d = new Dijkstra(start,enemyObject.getNODE_MATRIX(),this,enemyObject.getDusmanID());
+            d.setDestinationPoint(playerX,playerY);
+            d.reset();
+            d.start();
+
+
+            System.out.println("PRINTING FOR ENEMY MAP::");
+
         }
     }
 
@@ -191,8 +200,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
 
         //DRAW FIXED TILES FIRST
         drawFixedTiles(graphics2D);
+        //DRAW PLAYER
+        drawPlayer(graphics2D);
         //DRAW CHARACTERS AND ROUTE (DYNAMIC)
-        drawDynamics(graphics2D);
+        drawCharacters(graphics2D);
 
         /*
         graphics2D.drawImage(smurfetteImage,13*BLOCK_DIMEN,8*BLOCK_DIMEN,40,40,null);
@@ -223,37 +234,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
         return tiletype == TYPE_WALL;
     }
 
-    /**
-    * Called after player moves.
-    * Steps ----
-    * -> After player moves, enemy players needs to move.
-    * -> Update enemy player coordinates after step 1
-    * -> Reset NODE_MATRIX to first state using NODE_CLONED (which contains just walls and paths)
-    * -> Update player and enemies on NODE_MATRIX array of arrays
-    * -> Reset the Dijkstra class & create a new Object. Then repaint changes;
-    * */
-    private void clearAndStart () {
-        System.out.println("RESET");
-        for (int i = 0; i < NODE_CLONED.length; i++) {
-            for (int j = 0; j < NODE_CLONED[0].length; j++) {
-                System.out.print(NODE_CLONED[i][j].getType() + " \t");
-                int type = NODE_CLONED[i][j].getType();
-                int x = NODE_CLONED[i][j].getX();
-                int y = NODE_CLONED[i][j].getY();
-                NODE_MATRIX[i][j] = new SingleNode(type,x,y);
-            }
-            System.out.println("");
-        }
-        int playerX = PLAYER.getCoords_x();
-        int playerY = PLAYER.getCoords_y();
-        NODE_MATRIX[playerX][playerY] = new SingleNode(TYPE_DESTINATION,playerX,playerY);
-        NODE_MATRIX[3][0] = new SingleNode(TYPE_START,3,0);
-        algo = null;
-        algo = new Dijkstra(NODE_MATRIX[3][0],NODE_MATRIX,this);
-        algo.start();
-        repaint();
-    }
-
     @Override
     public void keyPressed(KeyEvent e) {
         //assign coords to temp vars
@@ -267,7 +247,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
                         int cX = PLAYER.getCoords_x();
                         cX++;
                         PLAYER.setCoords_x(cX);
-                        clearAndStart();
+                        resetDijkstraArray();
                     }
                 }
                 break;
@@ -278,7 +258,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
                         int cX = PLAYER.getCoords_x();
                         cX--;
                         PLAYER.setCoords_x(cX);
-                        clearAndStart();
+                        resetDijkstraArray();
                     }
                 }
                 break;
@@ -289,7 +269,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
                          int cY = PLAYER.getCoords_y();
                          cY--;
                          PLAYER.setCoords_y(cY);
-                         clearAndStart();
+                         resetDijkstraArray();
                      }
                  }
                 break;
@@ -300,14 +280,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
                         int cY = PLAYER.getCoords_y();
                         cY++;
                         PLAYER.setCoords_y(cY);
-                        clearAndStart();
+                        resetDijkstraArray();
                     }
                 }
                 break;
             default:
         }
         //repaint after moving the character
-        //repaint();
+        repaint();
     }
 
     @Override
@@ -320,8 +300,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
     }
 
     @Override
-    public void OnDijkstraResult(ArrayList<SingleNode> nodes) {
-        System.out.println("RESULT RECEIVED NODES");
+    public void OnDijkstraResult(ArrayList<SingleNode> nodes, String FROM) {
+        System.out.println("RESULT RECEIVED NODES FROM => " + FROM);
         for (SingleNode node : nodes) {
             System.out.println("POSITION XY: " + node.getX() + " - " + node.getY());
             System.out.println("POSITION XY LAST: " + node.getLastX() + " - " + node.getLastY());

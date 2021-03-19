@@ -36,21 +36,36 @@ public class MapReader implements Dijkstra.OnResult {
 
     }
 
-    public SingleNode[][] getNodes() {
+    private Tiles[][] createFixedTiles(ArrayList<String[]> grid) {
+        Tiles[][] tiles = new Tiles[grid.get(0).length][grid.size()];
+        for (int i = 0; i < grid.get(0).length; i++) {
+            for (int j = 0; j < grid.size(); j++) {
+                String type = grid.get(j)[i];
+                if (type.equals("1")) {
+                    tiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
+                } else {
+                    tiles[i][j] = new Tiles(i,j,TYPE_WALL,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
+                }
+            }
+        }
+        return tiles;
+    }
+
+    private SingleNode[][] createGridDynamic(ArrayList<String[]> grid, SingleNode[][] nodes) {
+        nodes = new SingleNode[grid.get(0).length][grid.size()];
+        for (int i = 0; i < grid.get(0).length; i++) {
+            for (int j = 0; j < grid.size(); j++) {
+                String type = grid.get(j)[i];
+                if (type.equals("1")) {
+                    nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
+                } else {
+                    nodes[i][j] = new SingleNode(TYPE_WALL,i,j);
+                }
+            }
+        }
         return nodes;
     }
 
-    public SingleNode[][] getCloned() {
-        return cloned;
-    }
-
-    public HashMap<String, Dusman> getCharacterHash() {
-        return enemiesHashset;
-    }
-
-    public Tiles[][] getFixedTiles() {
-        return fixedTiles;
-    }
 
     public void readMap () {
         File file = new File(mapPath);
@@ -75,30 +90,22 @@ public class MapReader implements Dijkstra.OnResult {
             //Close file reader
             reader.close();
 
-            //Initialize 2D Nodes array & 2D FixedTiles array.
-            nodes = new SingleNode[grid.get(0).length][grid.size()];
-            cloned = new SingleNode[grid.get(0).length][grid.size()];
-            fixedTiles = new Tiles[grid.get(0).length][grid.size()];
+            fixedTiles = createFixedTiles(grid);
+            cloned = createGridDynamic(grid,cloned);
 
-            // First loop is rows (13 length)
-            for (int i = 0; i < grid.get(0).length; i++) {
-                // Second loop is cols (11 length)
-                for (int j = 0; j < grid.size(); j++) {
-                    //Pick string. (1 or 0)
-                    String type = grid.get(j)[i];
-                    //If string is 1 than it's a path else it's a wall.
-                    //Add to nodes & fixed tiles 2d arrays.
-                    if (type.equals("1")) {
-                        nodes[i][j] = new SingleNode(TYPE_PATH,i,j);
-                        cloned[i][j] = new SingleNode(TYPE_PATH,i,j);
-                        fixedTiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
-                    } else {
-                        nodes[i][j] = new SingleNode(TYPE_WALL,i,j);
-                        cloned[i][j] = new SingleNode(TYPE_WALL,i,j);
-                        fixedTiles[i][j] = new Tiles(i,j,TYPE_WALL,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
-                    }
-                }
+            //Initialize 2D Nodes array & 2D FixedTiles array.
+            //nodes = new SingleNode[grid.get(0).length][grid.size()];
+
+            int player =  new Random().nextInt(2);
+            //Select random player
+            switch (player) {
+                case 0 -> PLAYER = new GozlukluSirin("PLAYER-GOZLUK", "GOZLUKLU", "GOZLUKLU",
+                        playerDefStartX, playerDefStartY, playerDefPoints);
+                case 1 -> PLAYER = new TembelSirin("PLAYER-TEMBEL", "TEMBEL", "TEMBEL",
+                        playerDefStartX, playerDefStartY, playerDefPoints);
             }
+
+
 
 
             for (int i = 0; i < enemies.size(); i++) {
@@ -112,22 +119,19 @@ public class MapReader implements Dijkstra.OnResult {
                 DusmanLokasyon dusmanLokasyon = new DusmanLokasyon(gatecoords[0],gatecoords[1]);
                 String ID = character.concat("-" + i);
                 SingleNode start = new SingleNode(TYPE_START,dusmanLokasyon.getX(),dusmanLokasyon.getY());
+                SingleNode[][] newNodes = new SingleNode[grid.get(0).length][grid.size()];
+                newNodes = createGridDynamic(grid,newNodes);
+                newNodes[PLAYER.getCoords_x()][PLAYER.getCoords_y()]
+                        = new SingleNode(TYPE_DESTINATION, PLAYER.getCoords_x(), PLAYER.getCoords_y());
                 if (character.equals("Azman")) {
-                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,start,nodes,this);
+                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,start,newNodes,this);
+                    a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }else {
-                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,start,nodes,this);
+                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,start,newNodes,this);
+                    a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }
-            }
-
-            int character = getRandomCharacter();
-            //Select random player
-            switch (character) {
-                case 0 -> PLAYER = new GozlukluSirin("PLAYER", "PLAYER", "GOZLUKLU",
-                        playerDefStartX, playerDefStartY, playerDefPoints);
-                case 1 -> PLAYER = new TembelSirin("PLAYER", "PLAYER", "TEMBEL",
-                        playerDefStartX, playerDefStartY, playerDefPoints);
             }
         } catch (
                 FileNotFoundException e) {
@@ -135,13 +139,28 @@ public class MapReader implements Dijkstra.OnResult {
         }
     }
 
-    // Returns 1 or 0 to pick a random player
-    public int getRandomCharacter () {
-        return new Random().nextInt(2);
+    public Oyuncu getPLAYER() {
+        return PLAYER;
+    }
+
+    public SingleNode[][] getNodes() {
+        return nodes;
+    }
+
+    public SingleNode[][] getCloned() {
+        return cloned;
+    }
+
+    public HashMap<String, Dusman> getCharacterHash() {
+        return enemiesHashset;
+    }
+
+    public Tiles[][] getFixedTiles() {
+        return fixedTiles;
     }
 
     @Override
-    public void OnDijkstraResult(ArrayList<SingleNode> nodes) {
-
+    public void OnDijkstraResult(ArrayList<SingleNode> nodes, String FROM_ID) {
+        System.out.println("D RESULT RECEIVED FOR : " + FROM_ID);
     }
 }
