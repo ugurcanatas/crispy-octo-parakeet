@@ -12,6 +12,9 @@ public class Dijkstra {
     boolean solving = true;
     OnResult onResult;
 
+    public Dijkstra() {
+    }
+
     public Dijkstra(OnResult onResult) {
         this.onResult = onResult;
     }
@@ -24,6 +27,10 @@ public class Dijkstra {
 
     public void setNODE_MATRIX(SingleNode[][] NODE_MATRIX) {
         this.NODE_MATRIX = NODE_MATRIX;
+    }
+
+    public SingleNode[][] getNODE_MATRIX() {
+        return NODE_MATRIX;
     }
 
     public void start() {

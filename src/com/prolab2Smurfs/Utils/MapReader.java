@@ -1,11 +1,15 @@
 package com.prolab2Smurfs.Utils;
 
+import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.Azman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.Gargamel;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
+import com.prolab2Smurfs.PlayerClasses.Oyuncu;
+import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.GozlukluSirin;
+import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.TembelSirin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,12 +17,13 @@ import java.util.*;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class MapReader{
+public class MapReader implements Dijkstra.OnResult {
     private SingleNode[][] nodes;
     private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
     ArrayList<String> enemies = new ArrayList<>();
     HashMap<String,Dusman> enemiesHashset = new HashMap<>();
+    private Oyuncu PLAYER;
 
     HashMap<String,int[]> gates = new HashMap<>();
 
@@ -70,26 +75,6 @@ public class MapReader{
             //Close file reader
             reader.close();
 
-            for (int i = 0; i < enemies.size(); i++) {
-                String[] splitted = enemies.get(i).split(",");
-                String character = splitted[0].split(":")[1];
-                String gate = splitted[1].split(":")[1];
-                System.out.println("ENEMY INFO:");
-                System.out.println("CHARACTER: " + character);
-                System.out.println("GATE: " + gate);
-                int[] gatecoords = gates.get(gate);
-                DusmanLokasyon dusmanLokasyon = new DusmanLokasyon(gatecoords[0],gatecoords[1]);
-                String ID = character.concat("-" + i);
-                if (character.equals("Azman")) {
-                    Dusman a = new Azman(ID,character, character,dusmanLokasyon);
-                    enemiesHashset.put(ID,a);
-                }else {
-                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon);
-                    enemiesHashset.put(ID,a);
-                }
-
-            }
-
             //Initialize 2D Nodes array & 2D FixedTiles array.
             nodes = new SingleNode[grid.get(0).length][grid.size()];
             cloned = new SingleNode[grid.get(0).length][grid.size()];
@@ -114,6 +99,36 @@ public class MapReader{
                     }
                 }
             }
+
+
+            for (int i = 0; i < enemies.size(); i++) {
+                String[] splitted = enemies.get(i).split(",");
+                String character = splitted[0].split(":")[1];
+                String gate = splitted[1].split(":")[1];
+                System.out.println("ENEMY INFO:");
+                System.out.println("CHARACTER: " + character);
+                System.out.println("GATE: " + gate);
+                int[] gatecoords = gates.get(gate);
+                DusmanLokasyon dusmanLokasyon = new DusmanLokasyon(gatecoords[0],gatecoords[1]);
+                String ID = character.concat("-" + i);
+                SingleNode start = new SingleNode(TYPE_START,dusmanLokasyon.getX(),dusmanLokasyon.getY());
+                if (character.equals("Azman")) {
+                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,start,nodes,this);
+                    enemiesHashset.put(ID,a);
+                }else {
+                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,start,nodes,this);
+                    enemiesHashset.put(ID,a);
+                }
+            }
+
+            int character = getRandomCharacter();
+            //Select random player
+            switch (character) {
+                case 0 -> PLAYER = new GozlukluSirin("PLAYER", "PLAYER", "GOZLUKLU",
+                        playerDefStartX, playerDefStartY, playerDefPoints);
+                case 1 -> PLAYER = new TembelSirin("PLAYER", "PLAYER", "TEMBEL",
+                        playerDefStartX, playerDefStartY, playerDefPoints);
+            }
         } catch (
                 FileNotFoundException e) {
             e.printStackTrace();
@@ -123,5 +138,10 @@ public class MapReader{
     // Returns 1 or 0 to pick a random player
     public int getRandomCharacter () {
         return new Random().nextInt(2);
+    }
+
+    @Override
+    public void OnDijkstraResult(ArrayList<SingleNode> nodes) {
+
     }
 }

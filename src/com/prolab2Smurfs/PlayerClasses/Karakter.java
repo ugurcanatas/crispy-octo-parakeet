@@ -1,19 +1,33 @@
 package com.prolab2Smurfs.PlayerClasses;
 
-public class Karakter {
+import com.prolab2Smurfs.Dijkstra.Dijkstra;
+import com.prolab2Smurfs.Dijkstra.SingleNode;
+
+public class Karakter extends Dijkstra {
     private String ID, Ad, Tur;
     private int coords_x, coords_y;
 
     public Karakter() {
+        super();
     }
 
     public Karakter(String ID, String ad, String tur) {
         this.ID = ID;
-        Ad = ad;
-        Tur = tur;
+        this.Ad = ad;
+        this.Tur = tur;
     }
 
     public Karakter(String ID, String ad, String tur, int coords_x, int coords_y) {
+        this.ID = ID;
+        this.Ad = ad;
+        this.Tur = tur;
+        this.coords_x = coords_x;
+        this.coords_y = coords_y;
+    }
+
+    public Karakter(String ID, String ad, String tur, int coords_x, int coords_y,
+                    SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult) {
+        super(startNode,NODE_MATRIX,onResult);
         this.ID = ID;
         Ad = ad;
         Tur = tur;

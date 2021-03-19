@@ -24,6 +24,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
@@ -46,6 +47,9 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
     MapReader mapReader = new MapReader();
 
     Queue<Dijkstra> dijkstraQueue = new LinkedList<>();
+
+    HashMap<String, Dusman> enemiesHash = new HashMap<>();
+    List<Dusman> enemiesList = new ArrayList<>();
 
     public Main() {
         setTitle("Smurfs");
@@ -71,20 +75,24 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
         nodeRows = NODE_MATRIX.length;
 
         //init start & destination nodes
-        NODE_MATRIX[3][0] = new SingleNode(TYPE_START,3,0); //Change this to enemy player
+        //NODE_MATRIX[3][0] = new SingleNode(TYPE_START,3,0); //Change this to enemy player
         NODE_MATRIX[6][5] = new SingleNode(TYPE_DESTINATION,6,5);
 
-        HashMap<String, Dusman> cMap = mapReader.getCharacterHash();
-        for (Map.Entry<String, Dusman> entry : cMap.entrySet()) {
+        enemiesHash = mapReader.getCharacterHash();
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
             Dusman enemyObject = entry.getValue();
             String enemyName = entry.getKey();
             print("ID 1: " + enemyObject.getDusmanID());
             print("ID 2: " + enemyObject.getID());
-        }
-        //dijkstraQueue.add();
 
-        algo = new Dijkstra(start,NODE_MATRIX,this);
-        algo.start();
+            int x = enemyObject.getDusmanLokasyon().getX();
+            int y = enemyObject.getDusmanLokasyon().getY();
+            enemiesList.add(enemyObject);
+            NODE_MATRIX[x][y] = new SingleNode(TYPE_START,x,y);
+        }
+
+        //algo = new Dijkstra(start,NODE_MATRIX,this);
+        //algo.start();
 
         System.out.println("");
         for (int i = 0; i < nodeRows; i++) {
