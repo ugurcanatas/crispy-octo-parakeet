@@ -23,6 +23,7 @@ public class MapReader {
     private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
     ArrayList<String> enemies = new ArrayList<>();
+    ArrayList<Tiles> PATHS = new ArrayList<>();
     HashMap<String,Dusman> enemiesHashset = new HashMap<>();
     private Oyuncu PLAYER;
 
@@ -44,6 +45,7 @@ public class MapReader {
                 String type = grid.get(j)[i];
                 if (type.equals("1")) {
                     tiles[i][j] = new Tiles(i,j,TYPE_PATH,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
+                    PATHS.add(tiles[i][j]);
                 } else {
                     tiles[i][j] = new Tiles(i,j,TYPE_WALL,i*BLOCK_DIMEN,j*BLOCK_DIMEN);
                 }
@@ -126,11 +128,9 @@ public class MapReader {
                         = new SingleNode(TYPE_DESTINATION, PLAYER.getCoords_x(), PLAYER.getCoords_y());
                 if (character.equals("Azman")) {
                     Dusman a = new Azman(ID,character, character,dusmanLokasyon,newNodes);
-                    //a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }else {
                     Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,newNodes);
-                    //a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }
             }
@@ -158,5 +158,9 @@ public class MapReader {
 
     public Tiles[][] getFixedTiles() {
         return fixedTiles;
+    }
+
+    public ArrayList<Tiles> getPATHS() {
+        return PATHS;
     }
 }

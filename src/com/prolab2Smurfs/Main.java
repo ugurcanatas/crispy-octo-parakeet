@@ -9,6 +9,9 @@ import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
+import com.prolab2Smurfs.Prizes.Gold;
+import com.prolab2Smurfs.Prizes.Mushroom;
+import com.prolab2Smurfs.Prizes.Prizes;
 import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
 import org.w3c.dom.Node;
@@ -23,12 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
-    Image smurfetteImage;
-    Image playerImage;
+public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface {
+    Image smurfetteImage,playerImage,mushroomImage;
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
@@ -45,9 +48,12 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
 
     HashMap<String,SingleNode> movesTo = new HashMap<>();
 
+    Mushroom mushroom;
+
     public Main() {
         setTitle("Smurfs");
         setSize(WINDOW_W,WINDOW_H);
+
 
         //Start reading the harita.txt file
         mapReader.readMap();
@@ -97,6 +103,9 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
         });
         addKeyListener(this);
 
+        System.out.println("LENGTH OF PATH 1: " + mapReader.getPATHS().size());
+        mushroom = new Mushroom(mapReader.getPATHS(),this,this);
+        //new Gold(10,this);
     }
 
     public static void main(String[] args) {
@@ -349,6 +358,23 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult {
             movesTo.put(a.getID(),sNode);
         }
         System.out.println("ENEMY RECEIVED WITH ID IN HASHMAP: " + a.getID());
+    }
+
+    @Override
+    public void onTimerUpdateGold() {
+        System.out.println("ON TIMER INTERFACE GOLD !!!!");
+    }
+
+    @Override
+    public void onTimerUpdateMushroom() {
+        System.out.println("SHOW A MUSHROOM !");
+        mushroom.pickTileToPopIn();
+        mushroom.hideShroom();
+    }
+
+    @Override
+    public void onMushroomTimeout() {
+        System.out.println("HIDE MUSHROOM");
     }
 }
 
