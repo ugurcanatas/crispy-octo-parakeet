@@ -2,6 +2,7 @@ package com.prolab2Smurfs.Utils;
 
 import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
+import com.prolab2Smurfs.Main;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.Azman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
@@ -17,7 +18,7 @@ import java.util.*;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class MapReader implements Dijkstra.OnResult {
+public class MapReader {
     private SingleNode[][] nodes;
     private SingleNode[][] cloned;
     private Tiles[][] fixedTiles;
@@ -124,12 +125,12 @@ public class MapReader implements Dijkstra.OnResult {
                 newNodes[PLAYER.getCoords_x()][PLAYER.getCoords_y()]
                         = new SingleNode(TYPE_DESTINATION, PLAYER.getCoords_x(), PLAYER.getCoords_y());
                 if (character.equals("Azman")) {
-                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,start,newNodes,this);
-                    a.setStartPoint(start.getX(),start.getY());
+                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,newNodes);
+                    //a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }else {
-                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,start,newNodes,this);
-                    a.setStartPoint(start.getX(),start.getY());
+                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,newNodes);
+                    //a.setStartPoint(start.getX(),start.getY());
                     enemiesHashset.put(ID,a);
                 }
             }
@@ -157,10 +158,5 @@ public class MapReader implements Dijkstra.OnResult {
 
     public Tiles[][] getFixedTiles() {
         return fixedTiles;
-    }
-
-    @Override
-    public void OnDijkstraResult(ArrayList<SingleNode> nodes, String FROM_ID) {
-        System.out.println("D RESULT RECEIVED FOR : " + FROM_ID);
     }
 }

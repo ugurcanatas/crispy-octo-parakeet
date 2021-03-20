@@ -2,6 +2,9 @@ package com.prolab2Smurfs.PlayerClasses;
 
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
+import com.prolab2Smurfs.Utils.Tiles;
+
+import static com.prolab2Smurfs.Utils.Constants.TYPE_WALL;
 
 public class Dusman extends Karakter {
     private String dusmanID, dusmanAdi, dusmanTur;
@@ -16,8 +19,8 @@ public class Dusman extends Karakter {
     }
 
     public Dusman(String ID, String ad, String tur, int coords_x, int coords_y, DusmanLokasyon dusmanLokasyon,
-                  SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult) {
-        super(ID, ad, tur, coords_x, coords_y,startNode,NODE_MATRIX,onResult);
+                  SingleNode[][] NODE_MATRIX) {
+        super(ID, ad, tur, coords_x, coords_y,NODE_MATRIX);
         this.dusmanID = ID;
         this.dusmanAdi = ad;
         this.dusmanTur = tur;

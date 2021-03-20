@@ -70,12 +70,17 @@ public class Dijkstra {
     /**
      * <h1>setNodes() method</h1>
      * <h3>Sets the desired node with dynamic type.</h3>
-     * @param TYPE <h3>Node Type. See Constants.java</h3>
+     * @param TYPE <h3>Node Type.</h3>
+     *              @see com.prolab2Smurfs.Utils.Constants
      * @param x <h3>X coordinate</h3>
      * @param y <h3>Y coordinate</h3>
      * */
     public void setNodes (int x, int y, int TYPE) {
         this.NODE_MATRIX[x][y] = new SingleNode(TYPE,x,y);
+    }
+
+    public void setOnResult(OnResult onResult) {
+        this.onResult = onResult;
     }
 
     public void start() {
@@ -85,7 +90,7 @@ public class Dijkstra {
                 this.solving = false;
                 break;
             }
-            System.out.println("SOLVIBNG");
+            System.out.println("SOLVING");
 
             int newDistance = progress.get(0).getDist() + 1;
             ArrayList<SingleNode> explored = exploreAdjMatrix(progress.get(0), newDistance);

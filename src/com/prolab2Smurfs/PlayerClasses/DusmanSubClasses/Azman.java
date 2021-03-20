@@ -8,9 +8,8 @@ public class Azman extends Dusman {
     DusmanLokasyon dusmanLokasyon;
 
     public Azman(String ID, String ad, String tur, DusmanLokasyon dusmanLokasyon,
-                 SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult) {
-        super(ID, ad, tur, dusmanLokasyon.getX(), dusmanLokasyon.getY(), dusmanLokasyon,
-                startNode,NODE_MATRIX,onResult);
+                 SingleNode[][] NODE_MATRIX) {
+        super(ID, ad, tur, dusmanLokasyon.getX(), dusmanLokasyon.getY(), dusmanLokasyon,NODE_MATRIX);
         this.ID = ID;
         this.ad = ad;
         this.tur = tur;
