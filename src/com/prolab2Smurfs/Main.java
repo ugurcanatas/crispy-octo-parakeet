@@ -49,6 +49,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     HashMap<String,SingleNode> movesTo = new HashMap<>();
 
     Mushroom mushroom;
+    Tiles mushroomTile;
+    boolean isShroomVisible = false;
 
     public Main() {
         setTitle("Smurfs");
@@ -62,6 +64,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         try {
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
+            mushroomImage = ImageIO.read(new File(assetsShroom));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -245,6 +248,13 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         graphics2D.setColor(Color.decode("#000000"));
         graphics2D.drawString("Y: " + (PLAYER.getCoords_y()),650,120);
 
+        if (isShroomVisible) {
+            int shroomX = mushroomTile.getX();
+            int shroomY = mushroomTile.getY();
+            graphics2D.drawImage(mushroomImage,(shroomX+1)*BLOCK_DIMEN,(shroomY+1)*BLOCK_DIMEN,
+                    BLOCK_DIMEN,BLOCK_DIMEN,null);
+        }
+
     }
 
     @Override
@@ -367,14 +377,19 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onTimerUpdateMushroom() {
+        isShroomVisible = true;
         System.out.println("SHOW A MUSHROOM !");
-        mushroom.pickTileToPopIn();
+        mushroomTile = mushroom.pickTileToPopIn();
         mushroom.hideShroom();
+        repaint();
     }
 
     @Override
     public void onMushroomTimeout() {
+        isShroomVisible = false;
         System.out.println("HIDE MUSHROOM");
+        mushroomTile = null;
+        repaint();
     }
 }
 
