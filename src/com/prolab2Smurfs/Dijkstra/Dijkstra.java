@@ -16,10 +16,6 @@ public class Dijkstra {
     public Dijkstra() {
     }
 
-    public Dijkstra(OnResult onResult) {
-        this.onResult = onResult;
-    }
-
     public Dijkstra(SingleNode startNode, SingleNode[][] NODE_MATRIX, OnResult onResult, String FROM_ID) {
         this.startNode = startNode;
         this.NODE_MATRIX = NODE_MATRIX;
@@ -27,11 +23,20 @@ public class Dijkstra {
         this.FROM_ID = FROM_ID;
     }
 
+    /**
+     * <h1>reset() method</h1>
+     * <h3>Resets the certain properties to beggining values in order to
+     * start Dijkstra search again</h3>
+     * */
     public void reset () {
         progress = new ArrayList<>();
         this.solving = true;
     }
 
+    /**
+     * <h1>setNODE_MATRIX() method</h1>
+     * <h3>Sets the 2D array to the CLONED 2D array.</h3>
+     * */
     public void setNODE_MATRIX(SingleNode[][] CLONED) {
         for (int i = 0; i < CLONED.length; i++) {
             for (int j = 0; j < CLONED[0].length; j++) {
@@ -44,14 +49,31 @@ public class Dijkstra {
         return NODE_MATRIX;
     }
 
+    /**
+     * <h1>setStartPoint() method</h1>
+     * <h3>Sets the start point.</h3>
+     * <p>Start point contains enemy x and y coordinates.</p>
+     * */
     public void setStartPoint(int x, int y) {
         this.NODE_MATRIX[x][y] = new SingleNode(TYPE_START,x,y);
     }
 
+    /**
+     * <h1>setStartPoint() method</h1>
+     * <h3>Sets the destination point.</h3>
+     * <p>Destination point contains player x and y coordinates.</p>
+     * */
     public void setDestinationPoint (int x, int y) {
         this.NODE_MATRIX[x][y] = new SingleNode(TYPE_DESTINATION,x,y);
     }
 
+    /**
+     * <h1>setNodes() method</h1>
+     * <h3>Sets the desired node with dynamic type.</h3>
+     * @param TYPE <h3>Node Type. See Constants.java</h3>
+     * @param x <h3>X coordinate</h3>
+     * @param y <h3>Y coordinate</h3>
+     * */
     public void setNodes (int x, int y, int TYPE) {
         this.NODE_MATRIX[x][y] = new SingleNode(TYPE,x,y);
     }
