@@ -8,7 +8,7 @@ public class Constants {
     public static final String assetsLazy =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/lazy-smurf-icon.png";
     public static final String assetsShroom =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom.png";
 
-    public static final int BLOCK_DIMEN = 40;
+    public static final int BLOCK_DIMEN = 50;
 
     public static final int WINDOW_W = 800;
     public static final int WINDOW_H = 800;
