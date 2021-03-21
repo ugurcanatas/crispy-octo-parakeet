@@ -30,8 +30,8 @@ import java.util.stream.Stream;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface {
-    Image smurfetteImage,playerImage,mushroomImage;
+public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface {
+    Image smurfetteImage,playerImage,mushroomImage,goldImage;
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
@@ -52,6 +52,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     Tiles mushroomTile;
     boolean isShroomVisible = false;
 
+    Gold gold;
+    List<Tiles> goldTiles = new ArrayList<>();
+    boolean isGoldVisible = false;
+
     public Main() {
         setTitle("Smurfs");
         setSize(WINDOW_W,WINDOW_H);
@@ -65,14 +69,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
             mushroomImage = ImageIO.read(new File(assetsShroom));
+            goldImage = ImageIO.read(new File(assetsCoin));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         //initialize 2D Node & 2D TileMap
-        NODE_MATRIX = mapReader.getNodes();
+        //NODE_MATRIX = mapReader.getNodes();
         NODE_CLONED = mapReader.getCloned();
-
         FIXED_TILES = mapReader.getFixedTiles();
 
         enemiesHash = mapReader.getCharacterHash();
@@ -108,7 +112,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
         System.out.println("LENGTH OF PATH 1: " + mapReader.getPATHS().size());
         mushroom = new Mushroom(mapReader.getPATHS(),this,this);
-        //new Gold(10,this);
+        gold = new Gold(mapReader.getPATHS(),this,this);
     }
 
     public static void main(String[] args) {
@@ -255,6 +259,15 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                     BLOCK_DIMEN,BLOCK_DIMEN,null);
         }
 
+        if (isGoldVisible) {
+            for (Tiles t : goldTiles) {
+                int goldX = t.getX();
+                int goldY = t.getY();
+                graphics2D.drawImage(goldImage,(goldX+1)*BLOCK_DIMEN,(goldY+1)*BLOCK_DIMEN,
+                        BLOCK_DIMEN,BLOCK_DIMEN,null);
+            }
+        }
+
     }
 
     @Override
@@ -372,7 +385,11 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onTimerUpdateGold() {
-        System.out.println("ON TIMER INTERFACE GOLD !!!!");
+        System.out.println("SHOW 5 GOLDS");
+        isGoldVisible = true;
+        goldTiles = gold.pickGoldToPopIn();
+        repaint();
+        gold.hideGold();
     }
 
     @Override
@@ -380,8 +397,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         isShroomVisible = true;
         System.out.println("SHOW A MUSHROOM !");
         mushroomTile = mushroom.pickTileToPopIn();
-        mushroom.hideShroom();
         repaint();
+        mushroom.hideShroom();
     }
 
     @Override
@@ -389,6 +406,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         isShroomVisible = false;
         System.out.println("HIDE MUSHROOM");
         mushroomTile = null;
+        repaint();
+    }
+
+    @Override
+    public void onGoldTimeout() {
+        isGoldVisible = false;
+        goldTiles = new ArrayList<>();
+        System.out.println("HIDE GOLD");
         repaint();
     }
 }
