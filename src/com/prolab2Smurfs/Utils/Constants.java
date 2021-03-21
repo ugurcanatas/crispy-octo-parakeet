@@ -2,6 +2,7 @@ package com.prolab2Smurfs.Utils;
 
 public class Constants {
 
+    //IMAGE ASSETS
     public static final String mapPath =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/harita.txt";
     public static final String assetsAzrael =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/azman.png";
     public static final String assetsGargamel =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gargamel.png";
@@ -11,6 +12,12 @@ public class Constants {
     public static final String assetsShroom =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom.png";
     public static final String assetsCoin =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/coin.png";
     public static final String assetsBrickwall =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/wall.png";
+
+    //SOUND ASSETS
+    public static final String soundGoldAppeared =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gold_appeared.wav";
+    public static final String soundGoldPickUp =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gold_pickup.wav";
+    public static final String soundMushroomAppeared =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom_appeared.wav";
+    public static final String soundMushroomPickUp =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom_pickup.wav";
 
     public static final int BLOCK_DIMEN = 50;
 

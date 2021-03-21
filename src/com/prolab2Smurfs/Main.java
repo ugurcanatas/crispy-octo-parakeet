@@ -17,6 +17,7 @@ import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -39,6 +40,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             brickwallImage,
             azraelImage,
             gargamelImage;
+    Clip goldAppearedSound, mushroomAppeared, mushroomPickup;
+    ArrayList<Clip> pickupSounds = new ArrayList<>();
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
@@ -63,6 +66,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     Gold gold;
     List<Tiles> goldTiles = new ArrayList<>();
     boolean isGoldVisible = false;
+    boolean isGoldPickedUp = false;
 
     //UI Stuff
     JLabel labelCoordinates, labelPlayerInfo;
@@ -91,6 +95,20 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         KARAKTER_PUAN = new Puan(20);
         //Load assets after initializing the PLAYER object
         try {
+            goldAppearedSound = AudioSystem.getClip();
+            goldAppearedSound.open(AudioSystem.getAudioInputStream(new File(soundGoldAppeared)));
+            mushroomAppeared = AudioSystem.getClip();
+            mushroomAppeared.open(AudioSystem.getAudioInputStream(new File(soundMushroomAppeared)));
+            mushroomPickup = AudioSystem.getClip();
+            mushroomPickup.open(AudioSystem.getAudioInputStream(new File(soundMushroomPickUp)));
+            int i = 0;
+            while (i < 5) {
+                Clip clip = AudioSystem.getClip();
+                clip.open(AudioSystem.getAudioInputStream(new File(soundGoldPickUp)));
+                pickupSounds.add(clip);
+                i++;
+            }
+
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
             mushroomImage = ImageIO.read(new File(assetsShroom));
@@ -98,7 +116,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             brickwallImage = ImageIO.read(new File(assetsBrickwall));
             azraelImage = ImageIO.read(new File(assetsAzrael));
             gargamelImage = ImageIO.read(new File(assetsGargamel));
-        } catch (IOException e) {
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
 
@@ -382,19 +400,17 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             default:
         }
 
-        if (isShroomVisible) {
-            System.out.println("SHROOM VISIBLE");
-            int mX = mushroomTile.getX();
-            int mY = mushroomTile.getY();
-            if (PLAYER.getCoords_x() == mX && PLAYER.getCoords_y() == mY) {
-                KARAKTER_PUAN.scoreMushroom();
-                isShroomVisible = false;
-                System.out.println("HIDE MUSHROOM AFTER GETTING IT");
-                mushroomTile = null;
-                //repaint();
-            }
-        }
+        checkMusroom();
+        checkGold();
+        checkCollusionWithEnemy();
 
+        System.out.println("TOPLAM PUAN: " + KARAKTER_PUAN.PuaniGoster());
+
+        //repaint after moving the character
+        repaint();
+    }
+
+    public void checkGold () {
         if (isGoldVisible) {
             List<Tiles> removeIndexes = new ArrayList<>();
             for (int i = 0; i < goldTiles.size(); i++) {
@@ -403,6 +419,9 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 if (PLAYER.getCoords_x() == gX && PLAYER.getCoords_y() == gY) {
                     removeIndexes.add(goldTiles.get(i));
                     KARAKTER_PUAN.scoreGold();
+                    isGoldPickedUp = true;
+                    pickupSounds.get(i).setFramePosition(0);
+                    pickupSounds.get(i).start();
                 }
             }
             if (removeIndexes.size() > 0) {
@@ -415,16 +434,44 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 }
             }
         }
-
-
-        System.out.println("TOPLAM PUAN: " + KARAKTER_PUAN.PuaniGoster());
-
-        //repaint after moving the character
-        repaint();
     }
 
-    public void checkGold () {
+    public void checkMusroom () {
+        if (isShroomVisible) {
+            System.out.println("SHROOM VISIBLE");
+            int mX = mushroomTile.getX();
+            int mY = mushroomTile.getY();
+            if (PLAYER.getCoords_x() == mX && PLAYER.getCoords_y() == mY) {
+                KARAKTER_PUAN.scoreMushroom();
+                isShroomVisible = false;
+                System.out.println("HIDE MUSHROOM AFTER GETTING IT");
+                mushroomTile = null;
+                mushroomPickup.setFramePosition(0);
+                mushroomPickup.start();
+            }
+        }
+    }
 
+    public void checkCollusionWithEnemy() {
+        int playerX = PLAYER.getCoords_x();
+        int playerY = PLAYER.getCoords_y();
+        for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
+            Dusman enemyObject = entry.getValue();
+            String enemyType = enemyObject.getDusmanTur();
+            int enemyX = enemyObject.getDusmanLokasyon().getX();
+            int enemyY = enemyObject.getDusmanLokasyon().getY();
+            //if there is a collusion
+            if (playerX == enemyX && playerY == enemyY) {
+                //Check enemy type before point loss.
+                if (enemyType.equals(GARGAMEL)) {
+                    KARAKTER_PUAN.lowerScoreGargamel();
+                    System.out.println("GARGAMEL CAUGHT YOU ! " + KARAKTER_PUAN.PuaniGoster());
+                }else {
+                    KARAKTER_PUAN.lowerScoreAzman();
+                    System.out.println("AZMAN CAUGHT YOU ! " + KARAKTER_PUAN.PuaniGoster());
+                }
+            }
+        }
     }
 
     private void playEnemy () {
@@ -466,6 +513,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onTimerUpdateGold() {
+        goldAppearedSound.start();
         System.out.println("SHOW 5 GOLDS");
         isGoldVisible = true;
         goldTiles = gold.pickGoldToPopIn();
@@ -475,6 +523,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onTimerUpdateMushroom() {
+        mushroomAppeared.start();
         isShroomVisible = true;
         System.out.println("SHOW A MUSHROOM !");
         mushroomTile = mushroom.pickTileToPopIn();
@@ -484,6 +533,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onMushroomTimeout() {
+        mushroomAppeared.setFramePosition(0);
         isShroomVisible = false;
         System.out.println("HIDE MUSHROOM");
         mushroomTile = null;
@@ -492,6 +542,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onGoldTimeout() {
+        goldAppearedSound.setFramePosition(0);
         isGoldVisible = false;
         goldTiles = new ArrayList<>();
         System.out.println("HIDE GOLD");
