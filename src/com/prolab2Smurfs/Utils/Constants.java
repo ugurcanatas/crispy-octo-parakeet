@@ -18,10 +18,14 @@ public class Constants {
     public static final String soundGoldPickUp =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gold_pickup.wav";
     public static final String soundMushroomAppeared =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom_appeared.wav";
     public static final String soundMushroomPickUp =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom_pickup.wav";
+    public static final String soundMushroomDisappear =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom_disappear.wav";
+    public static final String soundAzrael =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/azrael_sound.wav";
+    public static final String soundGargamel =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gargamel_sound.wav";
+    public static final String soundGameOver =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gameover.wav";
 
     public static final int BLOCK_DIMEN = 50;
 
-    public static final int WINDOW_W = 800;
+    public static final int WINDOW_W = 1000;
     public static final int WINDOW_H = 800;
 
     public static final int TYPE_WALL = 0;

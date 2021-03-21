@@ -9,7 +9,6 @@ import java.util.TimerTask;
 
 public class Mushroom extends Prizes{
     MushroomSubclassInterface m;
-    private static int point = 50;
     private static long visibleFor = 7000;
     private static int maxSeconds = 20;
     private List<Tiles> PATHS;
@@ -18,10 +17,6 @@ public class Mushroom extends Prizes{
         super(maxSeconds, "MUSHROOM",onTimerInterface);
         this.m = m;
         this.PATHS = PATHS;
-    }
-
-    public int getPoint() {
-        return point;
     }
 
     public Tiles pickTileToPopIn () {

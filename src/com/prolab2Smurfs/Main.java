@@ -32,7 +32,7 @@ import java.util.List;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface {
+public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface, Puan.OnPointInterface {
     Image smurfetteImage,
             playerImage,
             mushroomImage,
@@ -40,8 +40,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             brickwallImage,
             azraelImage,
             gargamelImage;
-    Clip goldAppearedSound, mushroomAppeared, mushroomPickup;
-    ArrayList<Clip> pickupSounds = new ArrayList<>();
+    Clip goldAppearedSound,
+            mushroomAppeared,
+            mushroomDisappear,
+            gameOverSound;
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
@@ -76,38 +78,20 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     public Main() {
         setTitle("Smurfs");
         setSize(WINDOW_W,WINDOW_H);
-
-        /*panel = new JPanel();
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
-                "Controls"));
-        panel.setLayout(new FlowLayout(FlowLayout.TRAILING));
-        labelCoordinates = new JLabel();
-        labelCoordinates.setText("Oyuncu Koordinatları");
-        labelPlayerInfo = new JLabel();
-        labelPlayerInfo.setText("Oyuncu Bilgileri");
-        panel.add(labelCoordinates);
-        panel.add(labelPlayerInfo);
-        add(panel);*/
-
         //Start reading the harita.txt file
         mapReader.readMap();
         PLAYER = mapReader.getPLAYER();
-        KARAKTER_PUAN = new Puan(20);
+        KARAKTER_PUAN = new Puan(playerDefPoints, this);
         //Load assets after initializing the PLAYER object
         try {
             goldAppearedSound = AudioSystem.getClip();
             goldAppearedSound.open(AudioSystem.getAudioInputStream(new File(soundGoldAppeared)));
             mushroomAppeared = AudioSystem.getClip();
             mushroomAppeared.open(AudioSystem.getAudioInputStream(new File(soundMushroomAppeared)));
-            mushroomPickup = AudioSystem.getClip();
-            mushroomPickup.open(AudioSystem.getAudioInputStream(new File(soundMushroomPickUp)));
-            int i = 0;
-            while (i < 5) {
-                Clip clip = AudioSystem.getClip();
-                clip.open(AudioSystem.getAudioInputStream(new File(soundGoldPickUp)));
-                pickupSounds.add(clip);
-                i++;
-            }
+            mushroomDisappear = AudioSystem.getClip();
+            mushroomDisappear.open(AudioSystem.getAudioInputStream(new File(soundMushroomDisappear)));
+            gameOverSound = AudioSystem.getClip();
+            gameOverSound.open(AudioSystem.getAudioInputStream(new File(soundGameOver)));
 
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
@@ -205,8 +189,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 graphics2D.drawImage(azraelImage,(enemyX+1)*BLOCK_DIMEN,(enemyY+1)*BLOCK_DIMEN,
                         BLOCK_DIMEN,BLOCK_DIMEN,null);
             }
-            //graphics2D.setColor(Color.green);
-            //graphics2D.fillRect((enemyX + 1) * BLOCK_DIMEN, (enemyY + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
 
             //Draw route
             for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
@@ -229,6 +211,22 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         int playerY = PLAYER.getCoords_y();
         graphics2D.drawImage(playerImage,(playerX+1)*BLOCK_DIMEN,(playerY+1)*BLOCK_DIMEN,
                 BLOCK_DIMEN,BLOCK_DIMEN,null);
+
+
+
+
+        graphics2D.setColor(Color.decode("#000000"));
+        graphics2D.setFont(new Font("Noto Serif",Font.PLAIN,16));
+        graphics2D.drawString("Oyuncu: ", 750,100);
+        graphics2D.setColor(Color.decode("#fcba03"));
+        graphics2D.setFont(new Font("Noto Serif",Font.BOLD,18));
+        graphics2D.drawString(PLAYER.getAd(), 750,120);
+        graphics2D.setColor(Color.decode("#000"));
+        graphics2D.setFont(new Font("Noto Serif",Font.BOLD,16));
+        graphics2D.drawString("PUAN:", 750,160);
+        graphics2D.setColor(Color.decode("#ed2874"));
+        graphics2D.setFont(new Font("Noto Serif",Font.BOLD,18));
+        graphics2D.drawString(String.valueOf(KARAKTER_PUAN.PuaniGoster()), 750,180);
     }
 
     //resets dijkstra maps for all enemy characters
@@ -420,8 +418,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                     removeIndexes.add(goldTiles.get(i));
                     KARAKTER_PUAN.scoreGold();
                     isGoldPickedUp = true;
-                    pickupSounds.get(i).setFramePosition(0);
-                    pickupSounds.get(i).start();
                 }
             }
             if (removeIndexes.size() > 0) {
@@ -446,8 +442,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 isShroomVisible = false;
                 System.out.println("HIDE MUSHROOM AFTER GETTING IT");
                 mushroomTile = null;
-                mushroomPickup.setFramePosition(0);
-                mushroomPickup.start();
             }
         }
     }
@@ -523,7 +517,9 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void onTimerUpdateMushroom() {
-        mushroomAppeared.start();
+        if (!isShroomVisible) {
+            mushroomAppeared.start();
+        }
         isShroomVisible = true;
         System.out.println("SHOW A MUSHROOM !");
         mushroomTile = mushroom.pickTileToPopIn();
@@ -534,6 +530,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     @Override
     public void onMushroomTimeout() {
         mushroomAppeared.setFramePosition(0);
+        if (isShroomVisible) {
+            mushroomDisappear.setFramePosition(0);
+            mushroomDisappear.start();
+        }
         isShroomVisible = false;
         System.out.println("HIDE MUSHROOM");
         mushroomTile = null;
@@ -547,6 +547,16 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         goldTiles = new ArrayList<>();
         System.out.println("HIDE GOLD");
         repaint();
+    }
+
+    @Override
+    public void onPointUpdate(int Skor) {
+        System.out.println("POINT UPDATE RECEIVED: " + Skor);
+        if (Skor <= 0) {
+            System.out.println("GAME OVER");
+            gameOverSound.setFramePosition(0);
+            gameOverSound.start();
+        }
     }
 }
 
