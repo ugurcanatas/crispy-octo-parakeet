@@ -3,11 +3,14 @@ package com.prolab2Smurfs.Utils;
 public class Constants {
 
     public static final String mapPath =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/harita.txt";
+    public static final String assetsAzrael =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/azman.png";
+    public static final String assetsGargamel =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/gargamel.png";
     public static final String assetsSmurfette =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/Smurfette.png";
     public static final String assetsBrainy =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/brainy-smurf-icon.png";
     public static final String assetsLazy =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/lazy-smurf-icon.png";
     public static final String assetsShroom =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/mushroom.png";
     public static final String assetsCoin =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/coin.png";
+    public static final String assetsBrickwall =  "/Users/ugurcanatas/IdeaProjects/PL-2-1/assets/wall.png";
 
     public static final int BLOCK_DIMEN = 50;
 
@@ -30,5 +33,8 @@ public class Constants {
     public static final int[] GATE_B_COORDS = {10,0};
     public static final int[] GATE_C_COORDS = {0,5};
     public static final int[] GATE_D_COORDS = {3,10};
+
+    public static final String GARGAMEL = "Gargamel";
+    public static final String AZRAEL = "Azman";
 
 }

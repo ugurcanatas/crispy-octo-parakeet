@@ -9,14 +9,16 @@ import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
 import com.prolab2Smurfs.PlayerClasses.Karakter;
+import com.prolab2Smurfs.PlayerClasses.OyuncuSubClasses.Puan;
 import com.prolab2Smurfs.Prizes.Gold;
 import com.prolab2Smurfs.Prizes.Mushroom;
 import com.prolab2Smurfs.Prizes.Prizes;
 import com.prolab2Smurfs.Utils.MapReader;
 import com.prolab2Smurfs.Utils.Tiles;
-import org.w3c.dom.Node;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -26,12 +28,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
 public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface {
-    Image smurfetteImage,playerImage,mushroomImage,goldImage;
+    Image smurfetteImage,
+            playerImage,
+            mushroomImage,
+            goldImage,
+            brickwallImage,
+            azraelImage,
+            gargamelImage;
 
     SingleNode[][] NODE_MATRIX;
     SingleNode[][] NODE_CLONED;
@@ -42,6 +49,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     //Init Player Class
     public Karakter PLAYER;
+    public Puan KARAKTER_PUAN;
     public MapReader mapReader = new MapReader();
 
     public HashMap<String, Dusman> enemiesHash;
@@ -56,20 +64,40 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     List<Tiles> goldTiles = new ArrayList<>();
     boolean isGoldVisible = false;
 
+    //UI Stuff
+    JLabel labelCoordinates, labelPlayerInfo;
+    JPanel panel;
+
+
     public Main() {
         setTitle("Smurfs");
         setSize(WINDOW_W,WINDOW_H);
 
+        /*panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
+                "Controls"));
+        panel.setLayout(new FlowLayout(FlowLayout.TRAILING));
+        labelCoordinates = new JLabel();
+        labelCoordinates.setText("Oyuncu Koordinatları");
+        labelPlayerInfo = new JLabel();
+        labelPlayerInfo.setText("Oyuncu Bilgileri");
+        panel.add(labelCoordinates);
+        panel.add(labelPlayerInfo);
+        add(panel);*/
 
         //Start reading the harita.txt file
         mapReader.readMap();
         PLAYER = mapReader.getPLAYER();
+        KARAKTER_PUAN = new Puan(20);
         //Load assets after initializing the PLAYER object
         try {
             smurfetteImage = ImageIO.read(new File(assetsSmurfette));
             playerImage = ImageIO.read(new File(PLAYER.getImg()));
             mushroomImage = ImageIO.read(new File(assetsShroom));
             goldImage = ImageIO.read(new File(assetsCoin));
+            brickwallImage = ImageIO.read(new File(assetsBrickwall));
+            azraelImage = ImageIO.read(new File(assetsAzrael));
+            gargamelImage = ImageIO.read(new File(assetsGargamel));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,12 +133,12 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                dispose(); System.exit(0);
+                dispose();
+                System.exit(0);
             }
         });
         addKeyListener(this);
 
-        System.out.println("LENGTH OF PATH 1: " + mapReader.getPATHS().size());
         mushroom = new Mushroom(mapReader.getPATHS(),this,this);
         gold = new Gold(mapReader.getPATHS(),this,this);
     }
@@ -128,13 +156,8 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 int y = tile.getY();
                 switch (tiletype) {
                     case TYPE_WALL -> {
-                        graphics2D.setColor(Color.decode("#000000"));
-                        Stroke s = graphics2D.getStroke();
-                        graphics2D.setStroke(new BasicStroke(2));
-                        graphics2D.drawRect((x + 1) * BLOCK_DIMEN, (y + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
-                        graphics2D.setStroke(s);
-                        graphics2D.setColor(Color.decode("#9e9e9e"));
-                        graphics2D.fillRect((x + 1) * BLOCK_DIMEN, (y + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
+                        graphics2D.drawImage(brickwallImage,(x+1)*BLOCK_DIMEN,(y+1)*BLOCK_DIMEN,
+                                BLOCK_DIMEN,BLOCK_DIMEN,null);
                     }
                     case TYPE_PATH -> {
                         graphics2D.setColor(Color.decode("#000000"));
@@ -155,8 +178,17 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             Dusman enemyObject = entry.getValue();
             int enemyX = enemyObject.getDusmanLokasyon().getX();
             int enemyY = enemyObject.getDusmanLokasyon().getY();
-            graphics2D.setColor(Color.green);
-            graphics2D.fillRect((enemyX + 1) * BLOCK_DIMEN, (enemyY + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
+            String enemyType = enemyObject.getDusmanTur();
+            System.out.println("DRAW DUSMNA NAME: " + enemyObject.getDusmanTur());
+            if (enemyType.equals(GARGAMEL)) {
+                graphics2D.drawImage(gargamelImage,(enemyX+1)*BLOCK_DIMEN,(enemyY+1)*BLOCK_DIMEN,
+                        BLOCK_DIMEN,BLOCK_DIMEN,null);
+            }else if (enemyType.equals(AZRAEL)) {
+                graphics2D.drawImage(azraelImage,(enemyX+1)*BLOCK_DIMEN,(enemyY+1)*BLOCK_DIMEN,
+                        BLOCK_DIMEN,BLOCK_DIMEN,null);
+            }
+            //graphics2D.setColor(Color.green);
+            //graphics2D.fillRect((enemyX + 1) * BLOCK_DIMEN, (enemyY + 1) * BLOCK_DIMEN, BLOCK_DIMEN, BLOCK_DIMEN);
 
             //Draw route
             for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
@@ -235,38 +267,46 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
         //DRAW FIXED TILES FIRST
         drawFixedTiles(graphics2D);
-        //DRAW PLAYER
-        drawPlayer(graphics2D);
-        //DRAW CHARACTERS AND ROUTE (DYNAMIC)
-        drawCharacters(graphics2D);
 
-        /*
-        graphics2D.drawImage(smurfetteImage,13*BLOCK_DIMEN,8*BLOCK_DIMEN,40,40,null);
-        //DRAW PLAYER 👻
-        graphics2D.drawImage(playerImage,BLOCK_DIMEN * (PLAYER.getCoords_x()+1),BLOCK_DIMEN * (PLAYER.getCoords_y()+1),40,40,null);
-*/
-        //NODE_MATRIX[PLAYER.getCoords_x()][PLAYER.getCoords_y()] = new SingleNode(TYPE_FINAL,PLAYER.getCoords_x(),PLAYER.getCoords_y());
-        // Draw x,y coords
-        graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("X: " + (PLAYER.getCoords_x()),650,100);
-        graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("Y: " + (PLAYER.getCoords_y()),650,120);
 
         if (isShroomVisible) {
             int shroomX = mushroomTile.getX();
             int shroomY = mushroomTile.getY();
-            graphics2D.drawImage(mushroomImage,(shroomX+1)*BLOCK_DIMEN,(shroomY+1)*BLOCK_DIMEN,
-                    BLOCK_DIMEN,BLOCK_DIMEN,null);
+            graphics2D.drawImage(mushroomImage,(shroomX+1)*BLOCK_DIMEN + 10,(shroomY+1)*BLOCK_DIMEN + 10,
+                    30,30,null);
         }
 
         if (isGoldVisible) {
             for (Tiles t : goldTiles) {
                 int goldX = t.getX();
                 int goldY = t.getY();
-                graphics2D.drawImage(goldImage,(goldX+1)*BLOCK_DIMEN,(goldY+1)*BLOCK_DIMEN,
-                        BLOCK_DIMEN,BLOCK_DIMEN,null);
+                graphics2D.drawImage(goldImage,(goldX+1)*BLOCK_DIMEN + 10,(goldY+1)*BLOCK_DIMEN + 10,
+                        30,30,null);
             }
         }
+
+
+        //DRAW PLAYER
+        drawPlayer(graphics2D);
+        //DRAW CHARACTERS AND ROUTE (DYNAMIC)
+        drawCharacters(graphics2D);
+
+        /*
+        //DRAW PLAYER 👻
+        graphics2D.drawImage(playerImage,BLOCK_DIMEN * (PLAYER.getCoords_x()+1),BLOCK_DIMEN * (PLAYER.getCoords_y()+1),40,40,null);
+*/
+
+        // Draw x,y coords
+        //Create debug screen to the right side
+        /*graphics2D.setColor(Color.decode("#000000"));
+        graphics2D.drawString("X: " + (PLAYER.getCoords_x()),650,100);
+        graphics2D.setColor(Color.decode("#000000"));
+        graphics2D.drawString("Y: " + (PLAYER.getCoords_y()),650,120);*/
+
+
+        //Final Point
+        graphics2D.drawImage(smurfetteImage,13*BLOCK_DIMEN,8*BLOCK_DIMEN,BLOCK_DIMEN,BLOCK_DIMEN,null);
+
 
     }
 
@@ -342,8 +382,49 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             default:
         }
 
+        if (isShroomVisible) {
+            System.out.println("SHROOM VISIBLE");
+            int mX = mushroomTile.getX();
+            int mY = mushroomTile.getY();
+            if (PLAYER.getCoords_x() == mX && PLAYER.getCoords_y() == mY) {
+                KARAKTER_PUAN.scoreMushroom();
+                isShroomVisible = false;
+                System.out.println("HIDE MUSHROOM AFTER GETTING IT");
+                mushroomTile = null;
+                //repaint();
+            }
+        }
+
+        if (isGoldVisible) {
+            List<Tiles> removeIndexes = new ArrayList<>();
+            for (int i = 0; i < goldTiles.size(); i++) {
+                int gX = goldTiles.get(i).getX();
+                int gY = goldTiles.get(i).getY();
+                if (PLAYER.getCoords_x() == gX && PLAYER.getCoords_y() == gY) {
+                    removeIndexes.add(goldTiles.get(i));
+                    KARAKTER_PUAN.scoreGold();
+                }
+            }
+            if (removeIndexes.size() > 0) {
+                if (goldTiles.size() > 0) {
+                    goldTiles.remove(removeIndexes.get(0));
+                }else {
+                    //All golds removed
+                    isGoldVisible = false;
+                    goldTiles = new ArrayList<>();
+                }
+            }
+        }
+
+
+        System.out.println("TOPLAM PUAN: " + KARAKTER_PUAN.PuaniGoster());
+
         //repaint after moving the character
         repaint();
+    }
+
+    public void checkGold () {
+
     }
 
     private void playEnemy () {
