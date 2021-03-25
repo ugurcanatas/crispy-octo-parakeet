@@ -1,29 +1,26 @@
 package com.prolab2Smurfs.Dijkstra;
 
 public class SingleNode {
-    private int nType;
-    private int lastX;
-    private int lastY;
-    private int x;
-    private int y;
-    private int dist;
-
+    private int NODE_TYPE,
+    lastX,
+    lastY,
+    x,y,dist;
 
     public SingleNode(int type, int x, int y) {
-        nType = type;
+        NODE_TYPE = type;
         this.x = x;
         this.y = y;
         dist = 0;
     }
 
-    public int getX() {return x;}		//GET METHODS
+    public int getX() {return x;}
     public int getY() {return y;}
     public int getLastX() {return lastX;}
     public int getLastY() {return lastY;}
-    public int getType() {return nType;}
+    public int getType() {return NODE_TYPE;}
     public int getDist() {return dist;}
 
-    public void setType(int type) {nType = type;}		//SET METHODS
+    public void setType(int type) {NODE_TYPE = type;}
     public void setLastNode(int x, int y) {lastX = x; lastY = y;}
     public void setDist(int dist){ this.dist = dist;}
 }
