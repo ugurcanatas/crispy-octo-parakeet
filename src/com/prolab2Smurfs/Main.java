@@ -32,7 +32,7 @@ import java.util.List;
 
 import static com.prolab2Smurfs.Utils.Constants.*;
 
-public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface, Puan.OnPointInterface {
+public class Main extends Frame implements KeyListener, Prizes.OnTimerInterface, Mushroom.MushroomSubclassInterface, Gold.GoldSubclassInterface, Puan.OnPointInterface, Karakter.DijkstraResultInterface {
     Image smurfetteImage,
             playerImage,
             mushroomImage,
@@ -86,18 +86,9 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             print("ID 1: " + enemyObject.getDusmanID());
             print("ID 2: " + enemyObject.getID());
             //Solve on first load
-            SingleNode start =
-                    new SingleNode(TYPE_START,enemyObject.getDusmanLokasyon().getX(),enemyObject.getDusmanLokasyon().getY());
-            Dijkstra d = new Dijkstra(start,enemyObject.getNODE_MATRIX(),this,enemyObject.getID());
-            d.start();
-
-            System.out.println("PRINTING FOR ENEMY MAP::");
-            for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
-                for (int j = 0; j < enemyObject.getNODE_MATRIX()[0].length; j++) {
-                    System.out.print(enemyObject.getNODE_MATRIX()[i][j].getType() + " \t");
-                }
-                System.out.println("");
-            }
+            enemyObject.setDijkstraResultInterface(this);
+            enemyObject.enKisaYoluBul();
+            printMap(enemyObject.getNODE_MATRIX());
         }
     }
 
@@ -220,9 +211,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         graphics2D.drawImage(playerImage,(playerX+1)*BLOCK_DIMEN,(playerY+1)*BLOCK_DIMEN,
                 BLOCK_DIMEN,BLOCK_DIMEN,null);
 
-
-
-
         graphics2D.setColor(Color.decode("#000000"));
         graphics2D.setFont(new Font("Noto Serif",Font.PLAIN,16));
         graphics2D.drawString("Oyuncu: ", 750,100);
@@ -242,7 +230,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         for (Map.Entry<String, Dusman> entry : enemiesHash.entrySet()) {
             System.out.println("RESET ARRAY");
             Dusman enemyObject = entry.getValue();
-            //enemyObject.reset();
 
             int playerX = PLAYER.getCoords_x();
             int playerY = PLAYER.getCoords_y();
@@ -256,29 +243,13 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             }
 
             enemyObject.setNodes(playerX,playerY,TYPE_DESTINATION);
+            enemyObject.setCoords_x(enemyX);
+            enemyObject.setCoords_y(enemyY);
             System.out.println("ENEMY X: " + enemyX);
             System.out.println("ENEMY Y: " + enemyY);
-            SingleNode start =
-                    new SingleNode(TYPE_START,enemyX,enemyY);
-            Dijkstra d = new Dijkstra(start,enemyObject.getNODE_MATRIX(),this,enemyObject.getID());
-            d.start();
+            enemyObject.enKisaYoluBul();
 
-
-            //enemyObject.setNODE_MATRIX(NODE_CLONED);
-
-            //enemyObject.setDestinationPoint(playerX,playerY);
-            //enemyObject.setStartPoint(enemyX,enemyY);
-            //enemyObject.start();
-            //Dijkstra d = new Dijkstra(new SingleNode(TYPE_START,enemyX,enemyY),NODE_CLONED,this,enemyObject.getID());
-            //d.start();
-
-            System.out.println("UPDATE ");
-            for (int i = 0; i < enemyObject.getNODE_MATRIX().length; i++) {
-                for (int j = 0; j < enemyObject.getNODE_MATRIX()[0].length; j++) {
-                    System.out.print(enemyObject.getNODE_MATRIX()[i][j].getType() + "\t");
-                }
-                System.out.println("");
-            }
+            printMap(enemyObject.getNODE_MATRIX());
         }
     }
 
@@ -286,12 +257,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     public void paint(Graphics g) {
         //Runs everytime when repaint() called
         super.paint(g);
-
         Graphics2D graphics2D = (Graphics2D)g;
 
         //DRAW FIXED TILES FIRST
         drawFixedTiles(graphics2D);
-
 
         if (isShroomVisible) {
             int shroomX = mushroomTile.getX();
@@ -308,30 +277,12 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                         30,30,null);
             }
         }
-
-
         //DRAW PLAYER
         drawPlayer(graphics2D);
         //DRAW CHARACTERS AND ROUTE (DYNAMIC)
         drawCharacters(graphics2D);
-
-        /*
-        //DRAW PLAYER 👻
-        graphics2D.drawImage(playerImage,BLOCK_DIMEN * (PLAYER.getCoords_x()+1),BLOCK_DIMEN * (PLAYER.getCoords_y()+1),40,40,null);
-*/
-
-        // Draw x,y coords
-        //Create debug screen to the right side
-        /*graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("X: " + (PLAYER.getCoords_x()),650,100);
-        graphics2D.setColor(Color.decode("#000000"));
-        graphics2D.drawString("Y: " + (PLAYER.getCoords_y()),650,120);*/
-
-
         //Final Point
         graphics2D.drawImage(smurfetteImage,13*BLOCK_DIMEN,8*BLOCK_DIMEN,BLOCK_DIMEN,BLOCK_DIMEN,null);
-
-
     }
 
     @Override
@@ -351,6 +302,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
 
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println("LENNNNN" + FIXED_TILES[0].length);
         //assign coords to temp vars
         int tempX = PLAYER.getCoords_x();
         int tempY = PLAYER.getCoords_y();
@@ -358,7 +310,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
                 tempX = tempX + increment;
-                if (tempX < 13) {
+                if (tempX < FIXED_TILES.length) {
                     if (!detectCollusion(tempX,tempY)) {
                         int cX = PLAYER.getCoords_x();
                         cX = cX + increment;
@@ -394,7 +346,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 break;
             case KeyEvent.VK_DOWN:
                 tempY = tempY + increment;
-                if (tempY < 11) {
+                if (tempY < FIXED_TILES[0].length) {
                     if (!detectCollusion(tempX,tempY)) {
                         System.out.println("CAN GO DOWN");
                         int cY = PLAYER.getCoords_y();
@@ -408,6 +360,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             default:
         }
 
+        if (PLAYER.getCoords_x() == 12 && PLAYER.getCoords_y() == 7) {
+            //You win the game
+            return;
+        }
         checkMusroom();
         checkGold();
         checkCollusionWithEnemy();
@@ -501,21 +457,6 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     }
 
     @Override
-    public void OnDijkstraResult(ArrayList<SingleNode> nodes, String FROM_ID) {
-        System.out.println("RECEIVED MESSAGE IN HERE" + nodes.size());
-        Dusman a = enemiesHash.get(FROM_ID);
-        if (nodes.size() != 0) {
-            SingleNode sNode = nodes.get(nodes.size() - a.getMovement());
-            movesTo.put(a.getID(),sNode);
-        }else {
-            //Check here...
-            SingleNode sNode = new SingleNode(TYPE_DESTINATION,PLAYER.getCoords_x(),PLAYER.getCoords_y());
-            movesTo.put(a.getID(),sNode);
-        }
-        System.out.println("ENEMY RECEIVED WITH ID IN HASHMAP: " + a.getID());
-    }
-
-    @Override
     public void onTimerUpdateGold() {
         goldAppearedSound.start();
         System.out.println("SHOW 5 GOLDS");
@@ -577,6 +518,31 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 //restart
             }
 
+        }
+    }
+
+    @Override
+    public void onDijkstraResult(ArrayList<SingleNode> result, String ID) {
+        System.out.println("RECEIVED MESSAGE IN HERE" + result.size());
+        Dusman a = enemiesHash.get(ID);
+        if (result.size() != 0) {
+            SingleNode sNode = result.get(result.size() - a.getMovement());
+            movesTo.put(a.getID(),sNode);
+        }else {
+            //Check here...
+            SingleNode sNode = new SingleNode(TYPE_DESTINATION,PLAYER.getCoords_x(),PLAYER.getCoords_y());
+            movesTo.put(a.getID(),sNode);
+        }
+        System.out.println("ENEMY RECEIVED WITH ID IN HASHMAP: " + a.getID());
+    }
+
+    private void printMap(SingleNode[][] MATRIX) {
+        System.out.println("PRINTING MAP::");
+        for (SingleNode[] matrix : MATRIX) {
+            for (int j = 0; j < MATRIX[0].length; j++) {
+                System.out.print(matrix[j].getType() + " \t");
+            }
+            System.out.println("");
         }
     }
 }
