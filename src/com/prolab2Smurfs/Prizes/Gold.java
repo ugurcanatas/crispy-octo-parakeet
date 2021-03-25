@@ -12,6 +12,8 @@ public class Gold extends Prizes {
     private List<Tiles> PICKED;
     private List<Integer> pickedNumbers;
     GoldSubclassInterface m;
+    private Timer timer;
+    boolean isTimerActive = true;
 
     public Gold(List<Tiles> PATHS, OnTimerInterface onTimerInterface, GoldSubclassInterface m) {
         super(maxSeconds, "GOLD", onTimerInterface);
@@ -19,10 +21,6 @@ public class Gold extends Prizes {
         this.PATHS = PATHS;
         this.PICKED = new ArrayList<>();
         this.pickedNumbers = new ArrayList<>();
-    }
-
-    public static int getPoint() {
-        return point;
     }
 
     public List<Tiles> pickGoldToPopIn(){
@@ -44,16 +42,22 @@ public class Gold extends Prizes {
         return PICKED;
     }
 
-    public void hideGold () {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                m.onGoldTimeout();
-            }
-        };
+    public void resetTimer(){
+        isTimerActive = false;
+    }
 
-        Timer timer = new Timer();
-        timer.schedule(task,visibleFor);
+    public void hideGold () {
+        if (isTimerActive) {
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    m.onGoldTimeout();
+                }
+            };
+
+            timer = new Timer();
+            timer.schedule(task,visibleFor);
+        }
     }
 
     public interface GoldSubclassInterface {

@@ -28,13 +28,6 @@ public class Oyuncu extends Karakter {
     }
 
 
-    public void losePointsGargamel() {
-        this.Skor = this.Skor - 15;
-    }
-
-    public void losePointsAzman() {
-        this.Skor = this.Skor - 5;
-    }
 
     @Override
     public String getImg() {

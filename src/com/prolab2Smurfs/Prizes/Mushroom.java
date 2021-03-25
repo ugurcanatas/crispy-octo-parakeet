@@ -12,6 +12,8 @@ public class Mushroom extends Prizes{
     private static long visibleFor = 7000;
     private static int maxSeconds = 20;
     private List<Tiles> PATHS;
+    private Timer timer;
+    boolean isTimerActive = true;
 
     public Mushroom (List<Tiles> PATHS, OnTimerInterface onTimerInterface, MushroomSubclassInterface m) {
         super(maxSeconds, "MUSHROOM",onTimerInterface);
@@ -26,17 +28,23 @@ public class Mushroom extends Prizes{
     }
 
     public void hideShroom () {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("RUNNİNG M TIMER");
-                m.onMushroomTimeout();//Dont forget cancel
-                //timer.cancel();
-            }
-        };
+        if (isTimerActive) {
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("RUNNİNG M TIMER");
+                    m.onMushroomTimeout();//Dont forget cancel
+                    //timer.cancel();
+                }
+            };
 
-        Timer timer = new Timer();
-        timer.schedule(task,visibleFor);
+            timer = new Timer();
+            timer.schedule(task,visibleFor);
+        }
+    }
+
+    public void resetTimer(){
+        isTimerActive = false;
     }
 
     public interface MushroomSubclassInterface {

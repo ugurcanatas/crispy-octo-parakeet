@@ -16,4 +16,8 @@ public class Azman extends Dusman {
         this.dusmanLokasyon = dusmanLokasyon;
     }
 
+    @Override
+    public int getMovement() {
+        return 1;
+    }
 }

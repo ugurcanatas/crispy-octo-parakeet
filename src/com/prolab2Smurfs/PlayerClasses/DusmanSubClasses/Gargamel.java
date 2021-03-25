@@ -8,4 +8,8 @@ public class Gargamel extends Dusman {
         super(ID, ad, tur, dusmanLokasyon.getX(),dusmanLokasyon.getY(),dusmanLokasyon,NODE_MATRIX);
     }
 
+    @Override
+    public int getMovement() {
+        return 1;
+    }
 }

@@ -9,6 +9,7 @@ public class Prizes{
     Timer timer;
     String TYPE;
     OnTimerInterface onTimerInterface;
+    boolean isTimerActive = true;
 
     public Prizes(long seconds, String TYPE, OnTimerInterface onTimerInterface) {
         this.TYPE = TYPE;
@@ -22,12 +23,23 @@ public class Prizes{
     class TimerClass extends TimerTask {
         @Override
         public void run() {
-            if (TYPE.equals("GOLD")) {
-                onTimerInterface.onTimerUpdateGold();
-            }else {
-                onTimerInterface.onTimerUpdateMushroom();
+            if (isTimerActive) {
+                if (TYPE.equals("GOLD")) {
+                    onTimerInterface.onTimerUpdateGold();
+                }else {
+                    onTimerInterface.onTimerUpdateMushroom();
+                }
             }
         }
+
+        @Override
+        public boolean cancel() {
+            return super.cancel();
+        }
+    }
+
+    public void resetTimer(){
+        isTimerActive = false;
     }
 
     public interface OnTimerInterface {

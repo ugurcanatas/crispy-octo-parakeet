@@ -12,4 +12,8 @@ public class GozlukluSirin extends Oyuncu {
         super(ID, ad, tur, coords_x, coords_y, Skor);
     }
 
+    @Override
+    public int getMovement() {
+        return 1;
+    }
 }

@@ -70,39 +70,10 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
     boolean isGoldVisible = false;
     boolean isGoldPickedUp = false;
 
-    //UI Stuff
-    JLabel labelCoordinates, labelPlayerInfo;
-    JPanel panel;
-
-
-    public Main() {
-        setTitle("Smurfs");
-        setSize(WINDOW_W,WINDOW_H);
-        //Start reading the harita.txt file
+    private void readMap(){
         mapReader.readMap();
         PLAYER = mapReader.getPLAYER();
         KARAKTER_PUAN = new Puan(playerDefPoints, this);
-        //Load assets after initializing the PLAYER object
-        try {
-            goldAppearedSound = AudioSystem.getClip();
-            goldAppearedSound.open(AudioSystem.getAudioInputStream(new File(soundGoldAppeared)));
-            mushroomAppeared = AudioSystem.getClip();
-            mushroomAppeared.open(AudioSystem.getAudioInputStream(new File(soundMushroomAppeared)));
-            mushroomDisappear = AudioSystem.getClip();
-            mushroomDisappear.open(AudioSystem.getAudioInputStream(new File(soundMushroomDisappear)));
-            gameOverSound = AudioSystem.getClip();
-            gameOverSound.open(AudioSystem.getAudioInputStream(new File(soundGameOver)));
-
-            smurfetteImage = ImageIO.read(new File(assetsSmurfette));
-            playerImage = ImageIO.read(new File(PLAYER.getImg()));
-            mushroomImage = ImageIO.read(new File(assetsShroom));
-            goldImage = ImageIO.read(new File(assetsCoin));
-            brickwallImage = ImageIO.read(new File(assetsBrickwall));
-            azraelImage = ImageIO.read(new File(assetsAzrael));
-            gargamelImage = ImageIO.read(new File(assetsGargamel));
-        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        }
 
         //initialize 2D Node & 2D TileMap
         //NODE_MATRIX = mapReader.getNodes();
@@ -128,6 +99,44 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 System.out.println("");
             }
         }
+    }
+
+    private void readAssets() {
+        //Load assets after initializing the PLAYER object
+        try {
+            goldAppearedSound = AudioSystem.getClip();
+            goldAppearedSound.open(AudioSystem.getAudioInputStream(new File(soundGoldAppeared)));
+            mushroomAppeared = AudioSystem.getClip();
+            mushroomAppeared.open(AudioSystem.getAudioInputStream(new File(soundMushroomAppeared)));
+            mushroomDisappear = AudioSystem.getClip();
+            mushroomDisappear.open(AudioSystem.getAudioInputStream(new File(soundMushroomDisappear)));
+            gameOverSound = AudioSystem.getClip();
+            gameOverSound.open(AudioSystem.getAudioInputStream(new File(soundGameOver)));
+
+            smurfetteImage = ImageIO.read(new File(assetsSmurfette));
+            playerImage = ImageIO.read(new File(PLAYER.getImg()));
+            mushroomImage = ImageIO.read(new File(assetsShroom));
+            goldImage = ImageIO.read(new File(assetsCoin));
+            brickwallImage = ImageIO.read(new File(assetsBrickwall));
+            azraelImage = ImageIO.read(new File(assetsAzrael));
+            gargamelImage = ImageIO.read(new File(assetsGargamel));
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initPrizes () {
+        mushroom = new Mushroom(mapReader.getPATHS(),this,this);
+        gold = new Gold(mapReader.getPATHS(),this,this);
+    }
+
+
+    public Main() {
+        setTitle("Smurfs");
+        setSize(WINDOW_W,WINDOW_H);
+        //Start reading the harita.txt file
+        readMap();
+        readAssets();
 
         setFocusable(true);
         setVisible(true);
@@ -141,8 +150,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         });
         addKeyListener(this);
 
-        mushroom = new Mushroom(mapReader.getPATHS(),this,this);
-        gold = new Gold(mapReader.getPATHS(),this,this);
+        initPrizes();
     }
 
     public static void main(String[] args) {
@@ -346,13 +354,14 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         //assign coords to temp vars
         int tempX = PLAYER.getCoords_x();
         int tempY = PLAYER.getCoords_y();
+        int increment = PLAYER.getMovement();
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
-                tempX++;
+                tempX = tempX + increment;
                 if (tempX < 13) {
                     if (!detectCollusion(tempX,tempY)) {
                         int cX = PLAYER.getCoords_x();
-                        cX++;
+                        cX = cX + increment;
                         PLAYER.setCoords_x(cX);
                         playEnemy();
                         resetDijkstraArray();
@@ -360,11 +369,11 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 }
                 break;
             case KeyEvent.VK_LEFT:
-                tempX--;
+                tempX = tempX - increment;
                 if (tempX > -1) {
                     if (!detectCollusion(tempX,tempY)) {
                         int cX = PLAYER.getCoords_x();
-                        cX--;
+                        cX = cX - increment;
                         PLAYER.setCoords_x(cX);
                         playEnemy();
                         resetDijkstraArray();
@@ -372,11 +381,11 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                 }
                 break;
             case KeyEvent.VK_UP:
-                tempY--;
+                tempY = tempY - increment;
                  if (tempY > -1) {
                      if (!detectCollusion(tempX,tempY)) {
                          int cY = PLAYER.getCoords_y();
-                         cY--;
+                         cY = cY - increment;
                          PLAYER.setCoords_y(cY);
                          playEnemy();
                          resetDijkstraArray();
@@ -384,11 +393,12 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
                  }
                 break;
             case KeyEvent.VK_DOWN:
-                tempY++;
+                tempY = tempY + increment;
                 if (tempY < 11) {
                     if (!detectCollusion(tempX,tempY)) {
+                        System.out.println("CAN GO DOWN");
                         int cY = PLAYER.getCoords_y();
-                        cY++;
+                        cY = cY + increment;
                         PLAYER.setCoords_y(cY);
                         playEnemy();
                         resetDijkstraArray();
@@ -495,7 +505,7 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
         System.out.println("RECEIVED MESSAGE IN HERE" + nodes.size());
         Dusman a = enemiesHash.get(FROM_ID);
         if (nodes.size() != 0) {
-            SingleNode sNode = nodes.get(nodes.size() - 1);
+            SingleNode sNode = nodes.get(nodes.size() - a.getMovement());
             movesTo.put(a.getID(),sNode);
         }else {
             //Check here...
@@ -556,6 +566,17 @@ public class Main extends Frame implements KeyListener, Dijkstra.OnResult, Prize
             System.out.println("GAME OVER");
             gameOverSound.setFramePosition(0);
             gameOverSound.start();
+            Object[] options = {"Evet, yeniden başlat"};
+            int n = JOptionPane.showOptionDialog(
+                    this,
+                    "Would you like green eggs and ham?",
+                    "An Insane Question",
+                    JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+            System.out.println("RESULT IS: " + n);
+            if (n == 0) {
+                //restart
+            }
+
         }
     }
 }

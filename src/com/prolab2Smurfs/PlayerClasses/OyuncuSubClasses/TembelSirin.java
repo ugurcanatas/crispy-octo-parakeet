@@ -8,4 +8,9 @@ public class TembelSirin extends Oyuncu {
     public TembelSirin(String ID, String ad, String tur, int coords_x, int coords_y, int Skor) {
         super(ID, ad, tur, coords_x, coords_y, Skor);
     }
+
+    @Override
+    public int getMovement() {
+        return 1;
+    }
 }
