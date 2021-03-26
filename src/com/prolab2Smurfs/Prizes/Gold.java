@@ -42,8 +42,10 @@ public class Gold extends Prizes {
         return PICKED;
     }
 
-    public void resetTimer(){
+    public void resetT(){
         isTimerActive = false;
+        timer.cancel();
+        timer.purge();
     }
 
     public void hideGold () {

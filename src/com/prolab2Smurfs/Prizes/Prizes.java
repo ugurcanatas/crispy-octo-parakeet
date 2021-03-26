@@ -40,6 +40,8 @@ public class Prizes{
 
     public void resetTimer(){
         isTimerActive = false;
+        timer.cancel();
+        timer.purge();
     }
 
     public interface OnTimerInterface {

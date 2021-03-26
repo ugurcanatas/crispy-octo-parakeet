@@ -362,7 +362,8 @@ public class Main extends Frame implements KeyListener, Prizes.OnTimerInterface,
 
         if (PLAYER.getCoords_x() == 12 && PLAYER.getCoords_y() == 7) {
             //You win the game
-            return;
+            System.out.println("YOU WIN THE GAME");
+            restartApp( "Oyunu kazandınız, tekrar başlamak isterseniz butona basınız.","Oyun Bitti");
         }
         checkMusroom();
         checkGold();
@@ -507,17 +508,26 @@ public class Main extends Frame implements KeyListener, Prizes.OnTimerInterface,
             System.out.println("GAME OVER");
             gameOverSound.setFramePosition(0);
             gameOverSound.start();
-            Object[] options = {"Evet, yeniden başlat"};
-            int n = JOptionPane.showOptionDialog(
-                    this,
-                    "Would you like green eggs and ham?",
-                    "An Insane Question",
-                    JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
-            System.out.println("RESULT IS: " + n);
-            if (n == 0) {
-                //restart
-            }
+            restartApp("Oyun Bitti","Oyunu kaybettiniz, tekrar başlamak için butona basın.");
+        }
+    }
 
+    private void restartApp (String message, String title) {
+        Object[] options = {"Evet, yeniden başlat"};
+        int n = JOptionPane.showOptionDialog(
+                this, message, title,
+                JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+        if (n == 0) {
+            //restart
+            mushroom.resetTimer();
+            mushroom.resetT();
+            gold.resetTimer();
+            gold.resetT();
+            mushroomTile = null;
+            goldTiles = new ArrayList<Tiles>();
+            readMap();
+            initPrizes();
+            repaint();
         }
     }
 
