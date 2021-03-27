@@ -4,7 +4,6 @@
 
 package com.prolab2Smurfs;
 
-import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
 import com.prolab2Smurfs.PlayerClasses.DusmanSubClasses.DusmanLokasyon;
@@ -19,7 +18,6 @@ import com.prolab2Smurfs.Utils.Tiles;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

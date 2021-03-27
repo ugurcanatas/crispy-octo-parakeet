@@ -1,6 +1,5 @@
 package com.prolab2Smurfs.Utils;
 
-import com.prolab2Smurfs.Dijkstra.Dijkstra;
 import com.prolab2Smurfs.Dijkstra.SingleNode;
 import com.prolab2Smurfs.Main;
 import com.prolab2Smurfs.PlayerClasses.Dusman;
