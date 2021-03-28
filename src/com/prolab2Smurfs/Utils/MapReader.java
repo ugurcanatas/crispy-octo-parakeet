@@ -126,10 +126,10 @@ public class MapReader {
                 newNodes[PLAYER.getCoords_x()][PLAYER.getCoords_y()]
                         = new SingleNode(TYPE_DESTINATION, PLAYER.getCoords_x(), PLAYER.getCoords_y());
                 if (character.equals("Azman")) {
-                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,newNodes);
+                    Dusman a = new Azman(ID,character, character,dusmanLokasyon,newNodes, gatecoords);
                     enemiesHashset.put(ID,a);
                 }else {
-                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,newNodes);
+                    Dusman a = new Gargamel(ID,character, character,dusmanLokasyon,newNodes, gatecoords);
                     enemiesHashset.put(ID,a);
                 }
             }

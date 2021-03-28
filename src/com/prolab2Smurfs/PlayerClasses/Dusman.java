@@ -9,6 +9,7 @@ import static com.prolab2Smurfs.Utils.Constants.TYPE_WALL;
 public class Dusman extends Karakter {
     private String dusmanID, dusmanAdi, dusmanTur;
     private DusmanLokasyon dusmanLokasyon;
+    private int[] gate;
 
     public Dusman(String ID, String ad, String tur, DusmanLokasyon dusmanLokasyon) {
         super(ID, ad, tur);
@@ -19,12 +20,13 @@ public class Dusman extends Karakter {
     }
 
     public Dusman(String ID, String ad, String tur, int coords_x, int coords_y, DusmanLokasyon dusmanLokasyon,
-                  SingleNode[][] NODE_MATRIX) {
-        super(ID, ad, tur, coords_x, coords_y,NODE_MATRIX);
+                  SingleNode[][] NODE_MATRIX, int[] gate) {
+        super(ID, ad, tur, coords_x, coords_y,NODE_MATRIX, gate);
         this.dusmanID = ID;
         this.dusmanAdi = ad;
         this.dusmanTur = tur;
         this.dusmanLokasyon = dusmanLokasyon;
+        this.gate = gate;
     }
 
     public String getDusmanID() {
@@ -57,5 +59,15 @@ public class Dusman extends Karakter {
 
     public void setDusmanLokasyon(DusmanLokasyon dusmanLokasyon) {
         this.dusmanLokasyon = dusmanLokasyon;
+        setCoords_x(dusmanLokasyon.getX());
+        setCoords_y(dusmanLokasyon.getY());
+    }
+
+    public int[] getGate() {
+        return gate;
+    }
+
+    public void setGate(int[] gate) {
+        this.gate = gate;
     }
 }

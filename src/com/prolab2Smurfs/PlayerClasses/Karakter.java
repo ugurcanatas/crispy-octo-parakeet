@@ -30,7 +30,7 @@ public class Karakter {
         this.coords_y = coords_y;
     }
 
-    public Karakter(String ID, String ad, String tur, int coords_x, int coords_y,SingleNode[][] NODE_MATRIX) {
+    public Karakter(String ID, String ad, String tur, int coords_x, int coords_y,SingleNode[][] NODE_MATRIX, int[] gate) {
         this.ID = ID;
         this.Ad = ad;
         this.Tur = tur;

@@ -419,8 +419,15 @@ public class Main extends Frame implements KeyListener, Prizes.OnTimerInterface,
             String enemyType = enemyObject.getDusmanTur();
             int enemyX = enemyObject.getDusmanLokasyon().getX();
             int enemyY = enemyObject.getDusmanLokasyon().getY();
+            int[] startGate = enemyObject.getGate();
+            String ID = enemyObject.getID();
+            SingleNode move = movesTo.get(ID);
             //if there is a collusion
             if (playerX == enemyX && playerY == enemyY) {
+                enemyObject.setDusmanLokasyon(new DusmanLokasyon(startGate[0],startGate[1]));
+                move.setX(startGate[0]);
+                move.setY(startGate[1]);
+
                 //Check enemy type before point loss.
                 if (enemyType.equals(GARGAMEL)) {
                     KARAKTER_PUAN.lowerScoreGargamel();
