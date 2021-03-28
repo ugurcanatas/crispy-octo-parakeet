@@ -27,7 +27,37 @@ public class Oyuncu extends Karakter {
         return this.Skor;
     }
 
+    public String getOyuncuID() {
+        return oyuncuID;
+    }
 
+    public void setOyuncuID(String oyuncuID) {
+        this.oyuncuID = oyuncuID;
+    }
+
+    public String getOyuncuAdi() {
+        return oyuncuAdi;
+    }
+
+    public void setOyuncuAdi(String oyuncuAdi) {
+        this.oyuncuAdi = oyuncuAdi;
+    }
+
+    public String getOyuncuTur() {
+        return oyuncuTur;
+    }
+
+    public void setOyuncuTur(String oyuncuTur) {
+        this.oyuncuTur = oyuncuTur;
+    }
+
+    public int getSkor() {
+        return Skor;
+    }
+
+    public void setSkor(int skor) {
+        Skor = skor;
+    }
 
     @Override
     public String getImg() {

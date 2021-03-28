@@ -23,4 +23,20 @@ public class SingleNode {
     public void setType(int type) {NODE_TYPE = type;}
     public void setLastNode(int x, int y) {lastX = x; lastY = y;}
     public void setDist(int dist){ this.dist = dist;}
+
+    public void setLastX(int lastX) {
+        this.lastX = lastX;
+    }
+
+    public void setLastY(int lastY) {
+        this.lastY = lastY;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
 }
