@@ -15,9 +15,9 @@ public class Prizes{
         this.TYPE = TYPE;
         this.onTimerInterface = onTimerInterface;
         this.seconds = seconds;
-        //int secondsRandom = new Random().nextInt(seconds);
+        int secondsRandom = new Random().nextInt((int) seconds);
         timer = new Timer();
-        timer.schedule(new TimerClass(),5000,seconds*1000);
+        timer.schedule(new TimerClass(),1000,secondsRandom*1000);
     }
 
     class TimerClass extends TimerTask {
